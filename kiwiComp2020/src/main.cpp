@@ -9,7 +9,6 @@
 
  constexpr int loopDelayMsec = 20;
  constexpr double wheelCircumference = 4.0*M_PI;//Never, ever, under any circumstances mess with this
- constexpr double trackingWheelCircumference = 3.25*M_PI;
  double calcDriveDegreesWheel( double targetDistanceInInches ) {
    //for calculating distance driving forward, not turning, in inches
      //divides goal distance by tire circumference
@@ -126,9 +125,8 @@ void autonomous() {
  */
 void opcontrol() {
 
-
 	int x = 0;
-  int y = 0; 
+  int y = 0;
 	int axis1 = 0;
 	int axis3 = 0;
 	int axis4 = 0;
@@ -136,37 +134,22 @@ void opcontrol() {
 	int speedyScale = 200;
 	int slowScale = 134;
 	int scale = slowScale;
-  std::string leftTWVal;
-  std::string rightTWVal;
-  std::string rearTWVal;
   int loopCount = 0;
-  master.clear();
+
 	while(true){
-
-
-    if((loopCount%50)==0){
-    leftTWVal= std::to_string(leftTrackingWheel.get());
-    rightTWVal= std::to_string(rightTrackingWheel.get());
-    rearTWVal= std::to_string(rearTrackingWheel.get());
-
-    master.setText(2,1, rightTWVal);
-    //master.setText(1,3, rearTWVal);
-    master.setText(1,14,leftTWVal);
-
-    }
 
 		if (turboBtn.changedToPressed()){
 			speedy = !speedy;
 		}
 
-		/*if(speedy==true){
+		if(speedy==true){
 			scale = speedyScale;
 			master.setText(2,1,"speedy.");
 		}
 		else{
 			scale = slowScale;
 			master.setText(2,1,"!speedy");
-		}*/
+		}
 
 		axis1 = master.getAnalog(okapi::ControllerAnalog::rightX)*200;
 		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
@@ -216,7 +199,7 @@ void opcontrol() {
         conveyorMotor.moveVelocity(0);
         break;
     }
-    ++loopCount;
-		pros::delay(20);
+
+	   pros::delay(20);
 	}
 }

@@ -5,7 +5,6 @@ KiwiPID::KiwiPID(double kp,double ki, double kd){
   p = kp;
   i = ki;
   d = kd;
-
 }
 
 void KiwiPID::init(){

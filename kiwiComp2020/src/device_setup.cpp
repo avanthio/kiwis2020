@@ -19,7 +19,7 @@ okapi::Motor  conveyorMotor(6,true, okapi::AbstractMotor::gearset::green, okapi:
 
 okapi::ADIEncoder rightTrackingWheel('G','H',true);
 okapi::ADIEncoder leftTrackingWheel('A','B');
-okapi::ADIEncoder rearTrackingWheel('C','F');
+okapi::ADIEncoder backTrackingWheel('C','F');
 
 okapi::MotorGroup Intake({leftIntakeMotor,rightIntakeMotor});
 

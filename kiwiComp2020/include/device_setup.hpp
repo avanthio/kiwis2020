@@ -6,7 +6,7 @@ extern okapi::Controller master;
 extern okapi::ControllerButton intakeInBtn;
 extern okapi::ControllerButton intakeStopBtn;
 extern okapi::ControllerButton conveyorStartBtn;
-extern okapi::ControllerButton conveyorStopBtn; 
+extern okapi::ControllerButton conveyorStopBtn;
 extern okapi::ControllerButton turboBtn;
 
 extern okapi::Motor  hMotor;
@@ -20,7 +20,7 @@ extern okapi::Motor  conveyorMotor;
 
 extern okapi::ADIEncoder rightTrackingWheel;
 extern okapi::ADIEncoder leftTrackingWheel;
-extern okapi::ADIEncoder rearTrackingWheel;
+extern okapi::ADIEncoder backTrackingWheel;
 
 extern okapi::MotorGroup Intake;
 
