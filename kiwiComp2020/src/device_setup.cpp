@@ -6,7 +6,7 @@ okapi::ControllerButton intakeStopBtn(okapi::ControllerDigital::L2);
 okapi::ControllerButton conveyorStartBtn(okapi::ControllerDigital::R1);
 okapi::ControllerButton conveyorStopBtn(okapi::ControllerDigital::R2);
 okapi::ControllerButton turboBtn(okapi::ControllerDigital::X);
-
+okapi::ControllerButton intakeReverseBtn(okapi::ControllerDigital::left);
 
 okapi::Motor  hMotor(14,false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
 okapi::Motor  leftFrontMotor(11,false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
@@ -15,18 +15,10 @@ okapi::Motor  rightFrontMotor(20,true, okapi::AbstractMotor::gearset::green, oka
 okapi::Motor  rightBackMotor(10,true, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
 okapi::Motor  leftIntakeMotor(9, false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
 okapi::Motor  rightIntakeMotor(2, true, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
-okapi::Motor  conveyorMotor(6,true, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
+okapi::Motor  conveyorMotor(6,false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
 
 okapi::ADIEncoder rightTrackingWheel('G','H',true);
-okapi::ADIEncoder leftTrackingWheel('A','B');
-okapi::ADIEncoder backTrackingWheel('C','F');
+okapi::ADIEncoder leftTrackingWheel('C','D');
+okapi::ADIEncoder backTrackingWheel('A','B');
 
 okapi::MotorGroup Intake({leftIntakeMotor,rightIntakeMotor});
-
-void setBrakeTypes(){
- Intake.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- leftBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- rightBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- rightFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- leftFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
-}

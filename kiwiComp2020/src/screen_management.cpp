@@ -236,11 +236,12 @@ pageADec = lv_page_create(lv_scr_act(),NULL);
 lv_obj_set_size(pageADec,480,272);
 labelDec = lv_label_create(pageADec, NULL);
 
-//This switch function prints the name of the selected autonomous.
+//This switch function prints the name of the selected autonomous, and sets the start point of the robot
 switch(programRun){
 
   case 1:
     lv_label_set_text(labelDec, "Red Rectangle");
+    //setStartPoint();(make instances of position struct for all the autons)
   break;
 
   case 2:

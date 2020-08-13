@@ -35,46 +35,13 @@
    return goalVelocity/(calcStep(accelTimeMsec));
  }
 
- void moveForwardTrackingWheel(double goalDistanceInches, int maxVelocityPCT){
 
-   	double goalDegrees = calcDriveDegreesTrackingWheel(goalDistanceInches);
-   	int maxVelocity = maxVelocityPCT*2;
-    int step = calcAccel(maxVelocity);
-    int initialVelocity = calcAccel(maxVelocity);
-    int actualVelocity = maxVelocity;
-		double currEncDegrees = 0;
-
-   	leftFrontMotor.tarePosition();
-   	rightFrontMotor.tarePosition();
-   	leftBackMotor.tarePosition();
-   	rightBackMotor.tarePosition();
-		rightTrackingWheel.reset();
-
-   	while(abs(currEncDegrees)<abs(goalDegrees)){
-   		currEncDegrees = rightTrackingWheel.get();
-
-   		leftFrontMotor.moveVelocity(actualVelocity);
-   		rightFrontMotor.moveVelocity(actualVelocity);
-   		leftBackMotor.moveVelocity(actualVelocity);
-   		rightBackMotor.moveVelocity(actualVelocity);
-
-			std::string as = std::to_string(currEncDegrees);
-			master.setText(1,2,as);
-
-   		pros::delay(loopDelayMsec);
-   	}
-
-
-     leftFrontMotor.moveVelocity(0);
-     rightFrontMotor.moveVelocity(0);
-     leftBackMotor.moveVelocity(0);
-     rightBackMotor.moveVelocity(0);
-
-
- }
 
 void initialize() {
 	pros::delay(100);
+  setBrakeTypes();
+  resetDevices();
+  pros::Task trackingTask(trackPosition);
 }
 
 /**
@@ -174,14 +141,19 @@ void opcontrol() {
 		else if(intakeStopBtn.isPressed()){
 			x=0;
 		}
-
-		switch(x){
+    else if(intakeReverseBtn.isPressed()){
+      x=-1;
+    }
+      
+    switch(x){
       case 1:
         Intake.moveVelocity(200);
         break;
       case 0:
         Intake.moveVelocity(0);
         break;
+      case -1:
+        Intake.moveVelocity(-200);
     }
 
     if(conveyorStartBtn.isPressed()){

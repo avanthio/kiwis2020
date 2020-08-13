@@ -79,7 +79,8 @@ void opcontrol(void);
 #include "device_setup.hpp"
 #include "screen_management.hpp"
 #include "pid.hpp"
-#include "odometry.hpp"
+#include "tracking.hpp"
+#include "device_management.hpp"
 
 //#include <iostream>
 #endif

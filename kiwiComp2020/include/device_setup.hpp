@@ -8,6 +8,7 @@ extern okapi::ControllerButton intakeStopBtn;
 extern okapi::ControllerButton conveyorStartBtn;
 extern okapi::ControllerButton conveyorStopBtn;
 extern okapi::ControllerButton turboBtn;
+extern okapi::ControllerButton intakeReverseBtn;
 
 extern okapi::Motor  hMotor;
 extern okapi::Motor  leftFrontMotor;
