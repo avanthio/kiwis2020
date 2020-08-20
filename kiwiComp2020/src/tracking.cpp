@@ -87,7 +87,7 @@ void trackPosition(){
     distTravelled = 2*(sin(halfChangeInAngle))*(leftDistTravelled/changeInAngle+offsetLeft);
 
     //calculate the distance the robot has travelled since the last cycle, but with the back tracking wheel
-    distTravelledBackWheel = 2*(sin(halfChangeInAngle))*(backDistTravelled/changeInAngle+offsetBack);
+    distTravelledBackWheel = 2*(sin(halfChangeInAngle))*(backDistTravelled/changeInAngle-offsetBack);
     }
     else{
       distTravelledBackWheel = backDistTravelled;
