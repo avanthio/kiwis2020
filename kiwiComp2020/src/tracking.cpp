@@ -2,11 +2,11 @@
 
 Position position{0,0,0};
 //distance from each tracking wheel to tracking center/center of robot
-constexpr double offsetLeft = 4.125;
-constexpr double offsetRight = 4.125;
+constexpr double offsetLeft = 4.27;
+constexpr double offsetRight = 4.27;
 constexpr double offsetBack = 6.625;
 //distance between left and right wheels
-constexpr double distBetweenLandR = offsetLeft+offsetRight;
+constexpr double distBetweenLandR = 8.5;
 
 //last encoder value for each wheel
 double lastLeftEncVal = 0;
@@ -107,24 +107,22 @@ void trackPosition(){
     //to its absolute position after the last cycle
     //to find its current position
     position.angle+=changeInAngle;
+
+    if(position.angle>=(2*M_PI)){
+      position.angle-=2*M_PI;
+    }
+    else if(position.angle<0){
+      position.angle+=2*M_PI;
+    }
+
     position.x+=changeInX;
     position.y+=changeInY;
-
-    //keep the angle of the robot between 0 and 2PI
-    while((position.angle)<0||(position.angle)>=(2*M_PI)){
-      if((position.angle)<0){
-        position.angle+=(2*M_PI);
-      }
-      else if(position.angle>=(2*M_PI)){
-        position.angle+=(-2*M_PI);
-      }
-    }
 
 
     //print some information to screens for debugging purposes (angle and coordinates of robot)
     if(loopNumber%20){
       robotAngleInDegrees = radiansToDegrees(position.angle);
-      trackingDebugString = "angle = " + std::to_string(robotAngleInDegrees) + "     " + "Coordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")";
+      trackingDebugString = "angle = " + std::to_string(robotAngleInDegrees) + "     " + "Coordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
       lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
       master.setText(1, 1, std::to_string(currBackEncVal)+" "+std::to_string(currLeftEncVal));
     }

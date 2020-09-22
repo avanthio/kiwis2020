@@ -61,6 +61,8 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
+
+  
 }
 
 /**
@@ -94,10 +96,15 @@ void opcontrol() {
 
 	int x = 0;
   int y = 0;
-	int axis1 = 0;
+  int leftFrontSpeed = 0;
+  int rightFrontSpeed = 0;
+  int rightBackSpeed = 0;
+  int leftBackSpeed = 0;
+  int axis4 = 0;
+	int axis2 = 0;
 	int axis3 = 0;
-	int axis4 = 0;
 	bool speedy = false;
+  bool driveSam = true;
 	int speedyScale = 200;
 	int slowScale = 134;
 	int scale = slowScale;
@@ -118,21 +125,34 @@ void opcontrol() {
 			master.setText(2,1,"!speedy");
 		}
 
-		axis1 = master.getAnalog(okapi::ControllerAnalog::rightX)*200;
-		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
-		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*scale;
+    if (driveSwitchBtn.changedToPressed()){
+			driveSam = !driveSam;
+		}
 
-		int leftFrontSpeed = axis3 + axis4;
-		int leftBackSpeed = axis3 + axis4;
-		int rightFrontSpeed = axis3 - axis4;
-		int rightBackSpeed = axis3 - axis4;
-		int hSpeed = axis1;
+    if(driveSam){
+		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
+		axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*scale;
+
+		  leftFrontSpeed = axis3;
+      leftBackSpeed = axis3;
+      rightFrontSpeed = axis2;
+      rightBackSpeed = axis2;
+    }
+    else{
+      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
+  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*scale;
+
+      leftFrontSpeed = axis3+axis4;
+      leftBackSpeed = axis3+axis4;
+      rightFrontSpeed = axis3-axis4;
+      rightBackSpeed = axis3-axis4;
+
+    }
 
 		leftFrontMotor.moveVelocity(leftFrontSpeed);
 		leftBackMotor.moveVelocity(leftBackSpeed);
 		rightFrontMotor.moveVelocity(rightFrontSpeed);
 		rightBackMotor.moveVelocity(rightBackSpeed);
-		hMotor.moveVelocity(hSpeed);
 
 
 		if(intakeInBtn.isPressed()){
@@ -144,7 +164,7 @@ void opcontrol() {
     else if(intakeReverseBtn.isPressed()){
       x=-1;
     }
-      
+
     switch(x){
       case 1:
         Intake.moveVelocity(200);
@@ -156,19 +176,31 @@ void opcontrol() {
         Intake.moveVelocity(-200);
     }
 
-    if(conveyorStartBtn.isPressed()){
-			y=1;
+    if(conveyorFastBtn.isPressed()){
+			y=2;
 		}
+    else if(conveyorSlowBtn.isPressed()){
+      y=1;
+    }
+    else if (conveyorReverseBtn.isPressed()){
+      y=-1;
+    }
 		else if(conveyorStopBtn.isPressed()){
 			y=0;
 		}
 
 		switch(y){
+      case 2:
+        Conveyor.moveVelocity(600);
+        break;
       case 1:
-        conveyorMotor.moveVelocity(200);
+        Conveyor.moveVelocity(200);
+        break;
+      case -1:
+        Conveyor.moveVelocity(-300);
         break;
       case 0:
-        conveyorMotor.moveVelocity(0);
+        Conveyor.moveVelocity(0);
         break;
     }
 

@@ -6,8 +6,7 @@ void setBrakeTypes(){
  rightBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
  rightFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
  leftFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- hMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
- conveyorMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+ Conveyor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
 }
 
 void resetDevices(){
@@ -16,8 +15,7 @@ void resetDevices(){
   rightBackMotor.tarePosition();
   leftBackMotor.tarePosition();
   rightFrontMotor.tarePosition();
-  conveyorMotor.tarePosition();
-  hMotor.tarePosition();
+  Conveyor.tarePosition();
   leftTrackingWheel.reset();
   rightTrackingWheel.reset();
   backTrackingWheel.reset();

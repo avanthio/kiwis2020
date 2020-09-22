@@ -12,4 +12,8 @@ struct Position{
 
 extern Position position;
 
+extern double degreesToRadians(double inputInDegrees);
+extern double radiansToDegrees(double inputInRadians);
+
+
 extern void trackPosition();
