@@ -1,6 +1,6 @@
 #include "tracking.hpp"
 
-Position position{0,0,0};
+struct Position position{0,0,0};
 //distance from each tracking wheel to tracking center/center of robot
 constexpr double offsetLeft = 4.27;
 constexpr double offsetRight = 4.27;
@@ -19,6 +19,21 @@ double robotAngleInDegrees;
 //a boolean that decides whether the the robot should be tracking its position or not
 bool tracking = true;
 
+//calculate the sign of a number (+,-,0)
+int getSign(double x){
+    int sign = 0;
+    if(x>0){
+      sign = 1;
+    }
+    else if(x<0){
+      sign = -1;
+    }
+    else{
+      sign = 0;
+    }
+    return sign;
+}
+
 //calculate the distance the tracking wheel has travelled, in inches
 double calcTrackingWheelDistTravelled(double trackingWheelEncoderValue){
   return trackingWheelEncoderValue/360*trackingWheelCircumference;
@@ -34,12 +49,22 @@ double radiansToDegrees(double inputInRadians){
   return inputInRadians*180/M_PI;
 }
 
+//keep angle between 0 and 2 PI
+double limitAngle(double angle){
+  while(angle>=(2*M_PI)){
+    angle-=2*M_PI;
+  }
+  while(angle<0){
+    angle+=2*M_PI;
+  }
+  return angle;
+}
 void setStartPoint(Position startPoint){
-  positionData.take(1000);
+  //positionData.take(1000);
   position.x = startPoint.x;
   position.y = startPoint.y;
   position.angle = startPoint.angle;
-  positionData.give();
+  //positionData.give();
 }
 
 //track the position of the robot using tracking wheel encoder values and math
@@ -94,7 +119,9 @@ void trackPosition(){
       distTravelled = leftDistTravelled;
     }
 
+    //positionData.take(20);
     totalAngle = position.angle + halfChangeInAngle;
+    //positionData.give();
 
     sinTotalAngle = sin(totalAngle);
     cosTotalAngle = cos(totalAngle);
@@ -106,18 +133,13 @@ void trackPosition(){
     //add the change in the robot's position from this cycle
     //to its absolute position after the last cycle
     //to find its current position
+    //positionData.take(20);
     position.angle+=changeInAngle;
-
-    if(position.angle>=(2*M_PI)){
-      position.angle-=2*M_PI;
-    }
-    else if(position.angle<0){
-      position.angle+=2*M_PI;
-    }
+    limitAngle(position.angle);
 
     position.x+=changeInX;
     position.y+=changeInY;
-
+    //positionData.give();
 
     //print some information to screens for debugging purposes (angle and coordinates of robot)
     if(loopNumber%20){

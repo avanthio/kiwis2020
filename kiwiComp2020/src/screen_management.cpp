@@ -36,12 +36,12 @@ static int height = 100;//height of button
 static int width = 140;//width of button
 
 
-std::string stringROne = "Red Rectangle";
-std::string stringRTwo = "Red Square";
-std::string stringBOne = "Blue Square";
-std::string stringBTwo = "Blue Rectangle";
-std::string stringRThree = "Red 5pt";
-std::string stringBThree = "Blue 5pt";
+std::string stringROne = "Red Left";
+std::string stringRTwo = "Red Right";
+std::string stringBOne = "Blue Left";
+std::string stringBTwo = "Blue Right";
+std::string stringRThree = " ";
+std::string stringBThree = " ";
 
 
 //this chooses the x value of the top corner of the button based on its number.
@@ -137,7 +137,7 @@ void create_buttons() {
   lv_obj_set_pos(btnROne, calcButtonX(1), rowOne);
 
   labelROne = lv_label_create(btnROne, NULL);
-  lv_label_set_text(labelROne, "Red Rectangle");
+  lv_label_set_text(labelROne, stringROne.c_str());
 
   btnRTwo = lv_btn_create(lv_scr_act(), NULL);
   lv_obj_set_size(btnRTwo, width, height);
@@ -148,7 +148,7 @@ void create_buttons() {
   lv_obj_set_pos(btnRTwo, calcButtonX(1), rowTwo);
 
   labelRTwo = lv_label_create(btnRTwo, NULL);
-  lv_label_set_text(labelRTwo, "Red Square");
+  lv_label_set_text(labelRTwo, stringRTwo.c_str());
 
   btnBOne = lv_btn_create(lv_scr_act(), NULL);
   lv_obj_set_size(btnBOne, width, height);
@@ -159,7 +159,7 @@ void create_buttons() {
   lv_obj_set_pos(btnBOne, calcButtonX(2), rowTwo);
 
   labelBOne = lv_label_create(btnBOne, NULL);
-  lv_label_set_text(labelBOne, "Blue Square");
+  lv_label_set_text(labelBOne, stringBOne.c_str());
 
   btnBTwo = lv_btn_create(lv_scr_act(), NULL);
   lv_obj_set_size(btnBTwo, width, height);
@@ -172,7 +172,7 @@ void create_buttons() {
   labelBTwo = lv_label_create(btnBTwo, NULL);
   lv_label_set_text(labelBTwo, stringBTwo.c_str());
 
-	btnAS = lv_btn_create(lv_scr_act(),NULL);
+	/*btnAS = lv_btn_create(lv_scr_act(),NULL);
 	lv_obj_set_size(btnAS, width, height);
   lv_obj_set_free_num(btnAS, 5);
 	lv_btn_set_action(btnAS, LV_BTN_ACTION_PR, btn_press_action);
@@ -192,11 +192,11 @@ void create_buttons() {
   lv_obj_set_pos(btnPageFlipOne, calcButtonX(3), rowTwo);
 
   labelPageFlipOne = lv_label_create(btnPageFlipOne,NULL);
-  lv_label_set_text(labelPageFlipOne, "Next Page");
+  lv_label_set_text(labelPageFlipOne, "Next Page");*/
 
 }
 
-void create_buttons_pgTwo(){
+/*void create_buttons_pgTwo(){
 
   lv_style_copy(&my_pageflip_style_pr, &lv_style_pretty_color);
   my_pageflip_style_pr.body.main_color = lv_color_hex(0x502966);
@@ -219,7 +219,7 @@ void create_buttons_pgTwo(){
 
 
 
-}
+}*/
 
 
 //Display the name of the selected autonomous program
@@ -240,25 +240,25 @@ labelDec = lv_label_create(pageADec, NULL);
 switch(programRun){
 
   case 1:
-    lv_label_set_text(labelDec, "Red Rectangle");
+    lv_label_set_text(labelDec, "Red Left");
     //setStartPoint();(make instances of position struct for all the autons)
   break;
 
   case 2:
-    lv_label_set_text(labelDec, "Red Square");
+    lv_label_set_text(labelDec, "Red Right");
   break;
 
   case 3:
-    lv_label_set_text(labelDec, "Blue Square");
+    lv_label_set_text(labelDec, "Blue Left");
   break;
 
   case 4:
-    lv_label_set_text(labelDec, "Blue Rectangle");
+    lv_label_set_text(labelDec, "Blue Right");
   break;
 
-  case 5:
+  /*case 5:
     lv_label_set_text(labelDec, "Auton Skills");
-  break;
+  break;*/
 
   case 0:
     lv_label_set_text(labelDec, "error");
@@ -279,24 +279,21 @@ void runChosenAuton(){
   //(a variable w/ value changed in auton selector) and runs the selected auton
   switch(programRun){
     case 1:
-
+      redFrontAuton();
     break;
 
     case 2:
-
+      redBackAuton();
     break;
 
     case 3:
-
+      blueBackAuton();
     break;
 
     case 4:
-
+      blueFrontAuton();
     break;
 
-    case 5:
-
-    break;
 
     case 0:
       labelErr = lv_label_create(pageAErr,NULL);

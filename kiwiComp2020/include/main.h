@@ -79,8 +79,11 @@ void opcontrol(void);
 #include "device_setup.hpp"
 #include "screen_management.hpp"
 #include "pid.hpp"
-#include "tracking.hpp"
+//#include "tracking.hpp"
 #include "device_management.hpp"
+#include "drivetrain.hpp"
+#include "autons.hpp"
+
 
 //#include <iostream>
 #endif

@@ -7,41 +7,14 @@
  * to keep execution time for this mode under a few seconds.
  */
 
- constexpr int loopDelayMsec = 20;
- constexpr double wheelCircumference = 4.0*M_PI;//Never, ever, under any circumstances mess with this
- double calcDriveDegreesWheel( double targetDistanceInInches ) {
-   //for calculating distance driving forward, not turning, in inches
-     //divides goal distance by tire circumference
-     //(calculate wheel rotations needed to move a given distance)
-     //then multiply by 360 to get the degrees of motor rotation
-     return targetDistanceInInches / wheelCircumference * 240.0 ;
- }
- double calcDriveDegreesTrackingWheel( double targetDistanceInInches ) {
-   //for calculating distance driving forward, not turning, in inches
-     //divides goal distance by tire circumference
-     //(calculate wheel rotations needed to move a given distance)
-     //then multiply by 360 to get the degrees of motor rotation
-     return targetDistanceInInches / trackingWheelCircumference * 360.0 ;
- }
- int calcStep(int timeToAccelMsec){
-   //calculates the number of loops you go through to accelerate
-   // based on the time spent to accelerate (in msec)
-   // and the delay in the loop (in msec)
-   return timeToAccelMsec/loopDelayMsec;
- }
- int calcAccel(int goalVelocity){
-   //calculates the velocity increase per step based on # of steps and goal velocity
-   const int accelTimeMsec = 700;
-   return goalVelocity/(calcStep(accelTimeMsec));
- }
-
 
 
 void initialize() {
 	pros::delay(100);
+	create_buttons();
   setBrakeTypes();
   resetDevices();
-  pros::Task trackingTask(trackPosition);
+  //pros::Task trackingTask(trackPosition);
 }
 
 /**
@@ -61,8 +34,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-
-  
+  selectionResult();
 }
 
 /**
@@ -77,6 +49,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
+	runChosenAuton();
 }
 
 /**
@@ -103,35 +76,20 @@ void opcontrol() {
   int axis4 = 0;
 	int axis2 = 0;
 	int axis3 = 0;
-	bool speedy = false;
   bool driveSam = true;
-	int speedyScale = 200;
-	int slowScale = 134;
-	int scale = slowScale;
   int loopCount = 0;
 
 	while(true){
 
-		if (turboBtn.changedToPressed()){
-			speedy = !speedy;
-		}
 
-		if(speedy==true){
-			scale = speedyScale;
-			master.setText(2,1,"speedy.");
-		}
-		else{
-			scale = slowScale;
-			master.setText(2,1,"!speedy");
-		}
 
     if (driveSwitchBtn.changedToPressed()){
 			driveSam = !driveSam;
 		}
 
     if(driveSam){
-		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
-		axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*scale;
+		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*200;
+		axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*200;
 
 		  leftFrontSpeed = axis3;
       leftBackSpeed = axis3;
@@ -139,8 +97,8 @@ void opcontrol() {
       rightBackSpeed = axis2;
     }
     else{
-      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*scale;
-  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*scale;
+      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*200;
+  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*200;
 
       leftFrontSpeed = axis3+axis4;
       leftBackSpeed = axis3+axis4;
