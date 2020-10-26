@@ -11,10 +11,10 @@
 
 void initialize() {
 	pros::delay(100);
-	create_buttons();
+	//create_buttons();
   setBrakeTypes();
   resetDevices();
-  //pros::Task trackingTask(trackPosition);
+  pros::Task trackingTask(trackPosition);
 }
 
 /**
@@ -34,7 +34,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-  selectionResult();
+  //selectionResult();
 }
 
 /**
@@ -49,7 +49,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	runChosenAuton();
+	//runChosenAuton();
 }
 
 /**
@@ -65,9 +65,16 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
 
-	int x = 0;
+void testFunction(){
+	struct Position testPos{0,0,90};
+	goToPosition(testPos, 50);
+}
+
+void opcontrol() {
+	testFunction();
+
+	/*int x = 0;
   int y = 0;
   int leftFrontSpeed = 0;
   int rightFrontSpeed = 0;
@@ -134,34 +141,25 @@ void opcontrol() {
         Intake.moveVelocity(-200);
     }
 
-    if(conveyorFastBtn.isPressed()){
-			y=2;
+    if(conveyorTopBtn.isPressed()){
+			topConveyorMotor.moveVelocity(200);
 		}
-    else if(conveyorSlowBtn.isPressed()){
-      y=1;
-    }
-    else if (conveyorReverseBtn.isPressed()){
-      y=-1;
-    }
-		else if(conveyorStopBtn.isPressed()){
-			y=0;
+		else{
+			topConveyorMotor.moveVelocity(0);
 		}
 
-		switch(y){
-      case 2:
-        Conveyor.moveVelocity(600);
-        break;
-      case 1:
-        Conveyor.moveVelocity(200);
-        break;
-      case -1:
-        Conveyor.moveVelocity(-300);
-        break;
-      case 0:
-        Conveyor.moveVelocity(0);
-        break;
-    }
+		if(conveyorBottomBtn.isPressed()){
+			bottomConveyorMotor.moveVelocity(200);
+		}
+		else if(conveyorReverseBtn.isPressed()){
+			bottomConveyorMotor.moveVelocity(-200);
+		}
+		else{
+			bottomConveyorMotor.moveVelocity(0);
+		}
+
+
 
 	   pros::delay(20);
-	}
+	}*/
 }

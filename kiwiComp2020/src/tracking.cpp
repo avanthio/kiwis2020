@@ -51,11 +51,13 @@ double radiansToDegrees(double inputInRadians){
 
 //keep angle between 0 and 2 PI
 double limitAngle(double angle){
-  while(angle>=(2*M_PI)){
-    angle-=2*M_PI;
-  }
-  while(angle<0){
-    angle+=2*M_PI;
+  while(angle>=2*M_PI||angle<0){
+    while(angle>=(2*M_PI)){
+      angle-=2*M_PI;
+    }
+    while(angle<0){
+      angle+=2*M_PI;
+    }
   }
   return angle;
 }
@@ -135,7 +137,7 @@ void trackPosition(){
     //to find its current position
     //positionData.take(20);
     position.angle+=changeInAngle;
-    limitAngle(position.angle);
+    position.angle = limitAngle(position.angle);
 
     position.x+=changeInX;
     position.y+=changeInY;
@@ -144,7 +146,7 @@ void trackPosition(){
     //print some information to screens for debugging purposes (angle and coordinates of robot)
     if(loopNumber%20){
       robotAngleInDegrees = radiansToDegrees(position.angle);
-      trackingDebugString = "angle = " + std::to_string(robotAngleInDegrees) + "     " + "Coordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
+      trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
       lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
       master.setText(1, 1, std::to_string(currBackEncVal)+" "+std::to_string(currLeftEncVal));
     }

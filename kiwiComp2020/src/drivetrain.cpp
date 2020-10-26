@@ -1,7 +1,7 @@
 #include "drivetrain.hpp"
 
 
-std::string info;
+/*std::string info;
 const int loopDelay = 20;
 static lv_obj_t* labelMoveForwardDebug;
 static lv_obj_t* labelTurnDebug;
@@ -156,7 +156,7 @@ void turnForDegrees(double degreeGoal, int turnVelocityPCT){
   rightFrontMotor.moveVelocity(0);
   leftBackMotor.moveVelocity(0);
   rightBackMotor.moveVelocity(0);
-  /*
+
   leftFrontMotor.moveAbsolute(goalDegrees,finalVelocity);
   rightFrontMotor.moveAbsolute(-goalDegrees,finalVelocity);
   leftBackMotor.moveAbsolute(goalDegrees, finalVelocity);
@@ -166,12 +166,13 @@ void turnForDegrees(double degreeGoal, int turnVelocityPCT){
   while(abs(currEnc)<abs(goalDegrees)){
     currEnc =((leftFrontMotor.getPosition()+leftBackMotor.getPosition())-(rightFrontMotor.getPosition()+rightBackMotor.getPosition()))/4.0;
     pros::delay(loopDelay);
-  }*/
+  }
   master.setText(1,1,info);
 
-}
+}*/
 
-/*//decides which way is fastest to turn and reach goal heading. true = CC, false = C
+//decides which way is fastest to turn and reach goal heading. true = CC, false = C
+//this has also been checked for all cases in Visual Studio, and works :)
 bool whichWayToTurn(double currHeading, double goalHeading){
   if((currHeading<goalHeading) && ((goalHeading-currHeading)<=M_PI)){
     return true;
@@ -198,26 +199,42 @@ int calcAccel(int goalVelocity){//calculates the velocity increase per step base
 
 //calculate the necessary heading of the robot to reach a goal position,
 //based on current position and goal position
+//has been checked over with testing in visual studio
+//it works in all quadrants and potential situations (y 0, x+- and x 0, y+-)
 double calcHeadingToGoalPos(struct Position curr, struct Position goal){
 
-  double theta = 0;
+double theta = 0;
 
-  if((goal.x-curr.x)!=0){
-    theta = atan((goal.y-curr.y)/(goal.x-curr.x));
+  if ((goal.x - curr.x) != 0) {
+    theta = atan((goal.y - curr.y) / (goal.x - curr.x));
     int signTheta = getSign(theta);
-    if(goal.y>curr.y){
-      if(signTheta == -1){
-        theta+=M_PI;
+    if (goal.y > curr.y) {
+      if (signTheta == -1) {
+        theta += M_PI;
       }
     }
-    else if(goal.y<curr.y){
-      if(signTheta == 1){
-        theta+=M_PI;
+    else if (goal.y < curr.y) {
+      if (signTheta == 1) {
+        theta += M_PI;
       }
-      else if(signTheta==-1){
-        theta+=(2*M_PI);
+      else if (signTheta == -1) {
+        theta += (2 * M_PI);
       }
     }
+    else if (goal.y == curr.y) {
+      if (goal.x > curr.x) {
+        theta = 0;
+      }
+      else {
+        theta = M_PI;
+      }
+    }
+  }
+  else {
+    theta = M_PI_2;
+      if (goal.y < curr.y) {
+        theta *= -1;
+      }
   }
 
   return theta;
@@ -229,17 +246,20 @@ double calcHeadingToGoalPos(struct Position curr, struct Position goal){
 //fastest to reach the goal heading, but you can set it to false
 //if there is an obstacle that prevents you from doing so
 
-
+static lv_obj_t* labelTestFn;
 //turns the robot towards a point, moves to it, and then adjusts the heading.
 //can only drive forward, so far.
-int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
+int goToPosition(struct Position goal,int velocityPCT){
+  int x = 0;
+  lv_label_create(lv_scr_act(),labelTestFn);
+  std::string testString;
 
   double goalVoltage = velocityPCT*120;
   //positionData.take(20);
   struct Position current = position;
   //positionData.give();
   double headingToGoalPos = calcHeadingToGoalPos(current,goal);
-  bool turnDirection = whichWayToTurn(current.angle,headingToGoalPos);
+  bool turnDirection = whichWayToTurn(current.angle,goal.angle);
   int step = calcStep(goalVoltage);
   int actualVoltage = 0;
   bool notAtGoal = true;
@@ -248,8 +268,9 @@ int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
   int rightVoltage;
   double distanceToGoalPos;
   struct Position error;
-  error.angle = headingToGoalPos-current.angle;
+  error.angle = goal.angle-current.angle;
   limitAngle(error.angle);
+
 
 
   //turn towards the goal position
@@ -257,7 +278,7 @@ int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
 
 
     if(abs(actualVoltage)<abs(goalVoltage)){
-      actualVoltage= goalVoltage;
+      actualVoltage = goalVoltage;
     }
 
     if(turnDirection){
@@ -283,25 +304,26 @@ int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
 
 
 
-        if(signVolt == -1){
-          headingToGoalPos = calcHeadingToGoalPos(current, goal)+M_PI;
-          if(headingToGoalPos>=(M_PI*2)){
-            headingToGoalPos-=(2*M_PI);
-          }
-          else if(headingToGoalPos<0){
-            headingToGoalPos+=2*M_PI;
-          }
-        }
-    headingToGoalPos = calcHeadingToGoalPos(current,goal);
-    turnDirection = whichWayToTurn(current.angle,headingToGoalPos);
-    error.angle = headingToGoalPos-current.angle;
+
+    //headingToGoalPos = calcHeadingToGoalPos(current,goal);
+    turnDirection = whichWayToTurn(current.angle,goal.angle);
+    error.angle = goal.angle-current.angle;
     limitAngle(error.angle);
+    /*if(x%20){
+      testString = "angle = " + std::to_string(radiansToDegrees(current.angle)) + "\n" + "Coordinates: (" + std::to_string(current.x) + "," + std::to_string(current.y) + ")" + '\n' + "Turn Direction: "+ std::to_string(turnDirection);
+      lv_label_set_text(labelTestFn,testString.c_str());
+    }*/
+    x+=1;
 
     pros::delay(20);
 
   }
 
-  //positionData.take(20);
+  testString+="\nTurn Complete!!!!!!!!";
+  lv_label_set_text(labelTestFn,testString.c_str());
+
+
+  /*//positionData.take(20);
   current = position;
   //positionData.give();
 
@@ -356,7 +378,7 @@ int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
     distanceToGoalPos = sqrt((error.x*error.x)+(error.y*error.y));
 
     pros::delay(20);
-  }
+  }*/
 
   leftFrontMotor.moveVoltage(0);
   leftBackMotor.moveVoltage(0);
@@ -364,4 +386,4 @@ int goToPosition(struct Position goal,int velocityPCT, bool turnDefault){
   rightBackMotor.moveVoltage(0);
 
   return 1;
-}*/
+}
