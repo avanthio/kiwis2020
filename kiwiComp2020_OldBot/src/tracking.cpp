@@ -1,6 +1,10 @@
 #include "tracking.hpp"
 
-struct Position position{0,0,0};
+//The wall behind the robot is where 0,0 is
+//PI/2 radians (90 deg) is where the robot is perpendicular to the wall
+//The range for the angle of the robot is -pi, pi.
+
+struct Position position{0,0,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
 constexpr double offsetLeft = 4.27;
 constexpr double offsetRight = 4.27;
@@ -13,7 +17,7 @@ double lastLeftEncVal = 0;
 double lastRightEncVal = 0;
 double lastBackEncVal = 0;
 int loopNumber;
-static lv_obj_t* labelTrackingDebug;
+//static lv_obj_t* labelTrackingDebug;
 std::string trackingDebugString;
 double robotAngleInDegrees;
 //a boolean that decides whether the the robot should be tracking its position or not
@@ -49,18 +53,19 @@ double radiansToDegrees(double inputInRadians){
   return inputInRadians*180/M_PI;
 }
 
-//keep angle between 0 and 2 PI
-double limitAngle(double angle){
-  while(angle>=2*M_PI||angle<0){
-    while(angle>=(2*M_PI)){
-      angle-=2*M_PI;
+//keep angle between -PI and PI.
+double limitAngle(double angle) {
+    while (angle > M_PI || angle <= -M_PI) {
+        while (angle > M_PI) {
+            angle -= 2 * M_PI;
+        }
+        while (angle <= -M_PI) {
+            angle += 2 * M_PI;
+        }
     }
-    while(angle<0){
-      angle+=2*M_PI;
-    }
-  }
-  return angle;
+    return angle;
 }
+
 void setStartPoint(Position startPoint){
   //positionData.take(1000);
   position.x = startPoint.x;
@@ -72,8 +77,8 @@ void setStartPoint(Position startPoint){
 //track the position of the robot using tracking wheel encoder values and math
 void trackPosition(){
 
-  lv_obj_clean(lv_scr_act());
-  labelTrackingDebug = lv_label_create(lv_scr_act(), NULL);
+  //lv_obj_clean(lv_scr_act());
+  //labelTrackingDebug = lv_label_create(lv_scr_act(), NULL);
 
   double currLeftEncVal;
   double currRightEncVal;
@@ -129,7 +134,7 @@ void trackPosition(){
     cosTotalAngle = cos(totalAngle);
 
     //calculate the change in the robot's absolute position on the field since the last cycle
-    changeInX = distTravelled*-sinTotalAngle+distTravelledBackWheel*cosTotalAngle;
+    changeInX = distTravelled*sinTotalAngle+distTravelledBackWheel*cosTotalAngle;
     changeInY = distTravelled*cosTotalAngle+distTravelledBackWheel*-sinTotalAngle;
 
     //add the change in the robot's position from this cycle
@@ -144,12 +149,12 @@ void trackPosition(){
     //positionData.give();
 
     //print some information to screens for debugging purposes (angle and coordinates of robot)
-    if(loopNumber%20){
+    /*if(loopNumber%20){
       robotAngleInDegrees = radiansToDegrees(position.angle);
       trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
       lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
       master.setText(1, 1, std::to_string(currBackEncVal)+" "+std::to_string(currLeftEncVal));
-    }
+    }*/
 
     //set the last encoder value equal to the current encoder value;
     lastLeftEncVal = currLeftEncVal;

@@ -14,6 +14,7 @@ public:
   void setMinOutput(double);
   double getOutput(double);
   double getOutput(double setpt, double actual);
+  double getRawOutput();
 
 
 private:
@@ -27,6 +28,7 @@ private:
   double errorSum;
   double lastError;
   double lastActual;
+  double rawOutput;
   bool firstRun;
   double minErrForI;
   void initialize();

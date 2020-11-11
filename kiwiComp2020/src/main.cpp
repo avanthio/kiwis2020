@@ -12,6 +12,7 @@
 void initialize() {
 	pros::delay(100);
 	//create_buttons();
+	setUpPIDs();
   setBrakeTypes();
   resetDevices();
   pros::Task trackingTask(trackPosition);
@@ -67,13 +68,13 @@ void autonomous() {
  */
 
 void testFunction(){
-	struct Position testPos{0,0,90};
-	goToPosition(testPos, 50);
+
+	turnToFacePosition(degreesToRadians(-90));
+	//printToSD();
 }
 
 void opcontrol() {
 	testFunction();
-
 	/*int x = 0;
   int y = 0;
   int leftFrontSpeed = 0;
@@ -142,7 +143,10 @@ void opcontrol() {
     }
 
     if(conveyorTopBtn.isPressed()){
-			topConveyorMotor.moveVelocity(200);
+			topConveyorMotor.moveVelocity(600);
+		}
+		else if(conveyorReverseBtn.isPressed()){
+			topConveyorMotor.moveVelocity(-200);
 		}
 		else{
 			topConveyorMotor.moveVelocity(0);
@@ -150,9 +154,6 @@ void opcontrol() {
 
 		if(conveyorBottomBtn.isPressed()){
 			bottomConveyorMotor.moveVelocity(200);
-		}
-		else if(conveyorReverseBtn.isPressed()){
-			bottomConveyorMotor.moveVelocity(-200);
 		}
 		else{
 			bottomConveyorMotor.moveVelocity(0);

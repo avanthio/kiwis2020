@@ -23,20 +23,24 @@ void KiwiPID::init(){
 	firstRun = true;
 }
 
+//resets some stored values for the PID
 void KiwiPID::reset(){
 	firstRun = true;
 	errorSum = 0;
   lastError = 0;
 }
 
+//sets how much the error can be before the PID starts using integral
 void KiwiPID::setMinErrForI(double minErrFrI){
   minErrForI = minErrFrI;
 }
 
+//sets the goal for the PID
 void KiwiPID::setSetpoint(double setpnt){
   setpoint = setpnt;
 }
 
+//set the maximum output of the integral portion of the PID
 void KiwiPID::setIMax(double IMaximum){
   iMax = IMaximum;
 }
@@ -89,8 +93,8 @@ double KiwiPID::getOutput(double actual){
     output = maxOutput;
   }
 
-  if(output<-maxOutput){
-    output = -maxOutput;
+  if(output<minOutput){
+    output = minOutput;
   }
 
   lastError = error;

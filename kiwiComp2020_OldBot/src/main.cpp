@@ -12,6 +12,7 @@
 void initialize() {
 	pros::delay(100);
 	//create_buttons();
+	setUpPIDs();
   setBrakeTypes();
   resetDevices();
   pros::Task trackingTask(trackPosition);
@@ -67,15 +68,8 @@ void autonomous() {
  */
 
 void testFunction(){
-	struct Position testPosA{0,-15,0};
-	struct Position testPosB{-15,-15,0};
-	struct Position testPosC{-15,0,0};
-	struct Position testPosD{0,0,0};
+	turnToFacePosition(0);
 
-	goToPosition(testPosA, 25);
-	goToPosition(testPosB, 25);
-	goToPosition(testPosC, 25);
-	goToPosition(testPosD, 25);
 
 
 }
