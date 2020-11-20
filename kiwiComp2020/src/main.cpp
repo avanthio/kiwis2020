@@ -68,14 +68,64 @@ void autonomous() {
  */
 
 void testFunction(){
+	struct Position goalPos{55.5,26,M_PI};
+	goToPosition(goalPos);
+	turnToFacePosition(M_PI);
+	Intake.moveVelocity(200);
+	goalPos = {24,24,M_PI};
+	goToPosition(goalPos);
+	Intake.moveVelocity(0);
+	Position current = position;
+	goalPos = {17,17,M_PI};
+	turnToFacePosition(calcHeadingToGoalPos(current, goalPos));
+	topConveyorMotor.moveVelocity(600);
+	bottomConveyorMotor.moveVelocity(200);
+	pros::delay(500);
+	goToPosition(goalPos);
+	bottomConveyorMotor.moveVelocity(200);
+	pros::delay(500);
+	Intake.moveVelocity(200);
+	topConveyorMotor.moveVelocity(600);
+	pros::delay(1000);
+	Intake.moveVelocity(0);
+	topConveyorMotor.moveVelocity(0);
+	bottomConveyorMotor.moveVelocity(0);
+	goalPos = {26,26,M_PI};
+	goToPosition(goalPos,true);
+	Intake.moveVelocity(200);
+	pros::delay(2000);
+	Intake.moveVelocity(-200);
+	topConveyorMotor.moveVelocity(600);
+	bottomConveyorMotor.moveVelocity(200);
+	pros::delay(5000);
+	Intake.moveVelocity(0);
+	topConveyorMotor.moveVelocity(0);
+	bottomConveyorMotor.moveVelocity(0);
+	goalPos = {56,74,M_PI};
+	current = position;
+	double headingToGoalPos = calcHeadingToGoalPos(current, goalPos);
+	Intake.moveVelocity(200);
+	turnToFacePosition(headingToGoalPos);
+	goToPosition(goalPos);
+	bottomConveyorMotor.moveVelocity(200);
+	turnToFacePosition(M_PI);
+	goalPos = {28,74,M_PI};
+	goToPosition(goalPos);
+	topConveyorMotor.moveVelocity(600);
+	pros::delay(500);
+	Intake.moveVelocity(0);
+	pros::delay(2000);
+	topConveyorMotor.moveVelocity(0);
+	goalPos = {56,74,M_PI};
+	goToPosition(goalPos,true);
 
-	turnToFacePosition(degreesToRadians(-90));
-	//printToSD();
+
 }
 
 void opcontrol() {
-	testFunction();
-	/*int x = 0;
+	//testFunction();
+
+	int x = 0;
   int y = 0;
   int leftFrontSpeed = 0;
   int rightFrontSpeed = 0;
@@ -162,5 +212,5 @@ void opcontrol() {
 
 
 	   pros::delay(20);
-	}*/
+	}
 }

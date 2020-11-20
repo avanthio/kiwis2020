@@ -22,8 +22,9 @@ bool drivetrainDebug = true;
 //There is one for turning and one for going straight
 //They are not tuned yet
 
-KiwiPID turnPID(17750,200,2); //17750,200,2
-KiwiPID straightPID(1,0,0);
+KiwiPID turnPID(17000,500,10000); //17750,200,2//1700,500,10000(better?)
+KiwiPID straightPID(1000,1,20);
+KiwiPID angleAdjustPID(25000,0,0);
 
 
 std::string pidData;
@@ -33,20 +34,22 @@ std::string pidData;
 void setUpPIDs(){
   turnPID.setMaxOutput(7500);
   turnPID.setMinOutput(-7500);
-  straightPID.setMaxOutput(12000);
-  straightPID.setMinOutput(-12000);
+  straightPID.setMaxOutput(7500);
+  straightPID.setMinOutput(-7500);
+  angleAdjustPID.setMaxOutput(3000);
+  angleAdjustPID.setMinOutput(-3000);
   turnPID.setSetpoint(0);
   straightPID.setSetpoint(0);
+  angleAdjustPID.setSetpoint(0);
 
-  turnPID.setMinErrForI(0);
-  straightPID.setMinErrForI(0);
   turnPID.setIMax(7500);
-  straightPID.setIMax(12000);
+  straightPID.setIMax(7500);
+  angleAdjustPID.setIMax(7500);
 
 }
 
 
-int distanceToPoint(Position current, Position goal){
+double distanceToPoint(Position current, Position goal){
   Position error;
   error.x = goal.x-current.x;
   error.y = goal.y-current.y;
@@ -148,16 +151,16 @@ void turnToFacePosition(double headingToFacePos){
   turnPID.reset();
 
   int x = 0;
-  struct Position current = position;
+  struct Position current;
   int actualVoltage;
   struct Position error;
-  error.angle = headingToFacePos-current.angle;
-  limitAngle(error.angle);
   //save the original error to decide which side of the drivetrain goes forward and which side goes backward to start out
-  double originalErr = error.angle;
   std::string outputStr;
 
   while(1){
+
+    current = position;
+    error.angle = limitAngle(headingToFacePos-current.angle);
 
     actualVoltage = turnPID.getOutput(error.angle);
 
@@ -166,32 +169,25 @@ void turnToFacePosition(double headingToFacePos){
       lv_label_set_text(labelX,outputStr.c_str());
     }
 
-    if(getSign(originalErr) == 1){
-      leftFrontMotor.moveVoltage(-actualVoltage);
-      leftBackMotor.moveVoltage(-actualVoltage);
-      rightFrontMotor.moveVoltage(actualVoltage);
-      rightBackMotor.moveVoltage(actualVoltage);
-    }
-    else{
-      rightFrontMotor.moveVoltage(-actualVoltage);
-      rightBackMotor.moveVoltage(-actualVoltage);
+
       leftFrontMotor.moveVoltage(actualVoltage);
       leftBackMotor.moveVoltage(actualVoltage);
-    }
+      rightFrontMotor.moveVoltage(-actualVoltage);
+      rightBackMotor.moveVoltage(-actualVoltage);
 
-    if(error.angle<degreesToRadians(0.25)){
+
+    if(abs(error.angle)<degreesToRadians(0.75)){
       x+=1;
     }
     else{
       x = 0;
     }
 
-    /*if(x>20){
+    if(x>10){
       break;
-    }*/
+    }
 
-    current = position;
-    error.angle = headingToFacePos-current.angle;
+
 
     pros::delay(20);
     //Below is some stuff to help tune PID, don't worry about it too much.
@@ -209,57 +205,85 @@ void turnToFacePosition(double headingToFacePos){
 //this one doesn't have the PID added yet, and cannot go backwards. I still need to fix it
 //It is supposed to drive (straight) to a point.
 void goToPosition(struct Position goal, bool reversed){
+  if(drivetrainDebug){
+    lv_obj_clean(lv_scr_act());
+    labelX = lv_label_create(lv_scr_act(),NULL);
+  }
+
+  straightPID.reset();
+  angleAdjustPID.reset();
   int x = 0;
-  //lv_label_create(lv_scr_act(),labelTestFn);
-  //std::string testString;
-  int minimumVoltage = 2500;//was 2500
+  int y = 0;
   struct Position current = position;
   Position startOfDrive = current;
   double headingToGoalPos = calcHeadingToGoalPos(current,goal);
-  bool turnDirection = whichWayToTurn(current.angle,headingToGoalPos);
-  int actualVoltage = 6000;
-  bool notAtGoal = true;
-  int leftVoltage;
-  int rightVoltage;
+  if(reversed){
+    headingToGoalPos=limitAngle(headingToGoalPos+M_PI);
+  }
   double distanceToGoalPos = distanceToPoint(current,goal);
+  if(reversed){
+    distanceToGoalPos*=-1;
+  }
+  double initialDistance = distanceToGoalPos;
   struct Position error;
-  error.angle = headingToGoalPos-current.angle;
-  limitAngle(error.angle);
 
   int angleAdjustment = 0;
+  int baseVoltage = 0;
+  std::string outputStr;
 
-  while(distanceToGoalPos>3){
-
-    angleAdjustment = 0;
-
-    if(error.angle>(degreesToRadians(0.5))){
-      angleAdjustment = radiansToDegrees(error.angle)*50;
-    }
-
-
-    if(turnDirection){
-      leftVoltage = actualVoltage - angleAdjustment;
-      rightVoltage = actualVoltage;
-    }
-    else{
-      leftVoltage = actualVoltage;
-      rightVoltage = actualVoltage-angleAdjustment;
-    }
-
-
-    //positionData.take(20);
+  while(1){
     current = position;
     //positionData.give();
 
-    error.x = goal.x-current.x;
-    error.y = goal.y-current.y;
-
     headingToGoalPos = calcHeadingToGoalPos(current, goal);
-    error.angle = headingToGoalPos-current.angle;
-    limitAngle(error.angle);
+    if(reversed){
+      headingToGoalPos = limitAngle(headingToGoalPos+M_PI);
+    }
 
-    turnDirection = whichWayToTurn(current.angle, headingToGoalPos);
-    distanceToGoalPos = sqrt((error.x*error.x)+(error.y*error.y));
+    error.angle = headingToGoalPos-current.angle;
+    error.angle = limitAngle(error.angle);
+
+    distanceToGoalPos = distanceToPoint(current,goal);
+    if(reversed){
+      distanceToGoalPos*=-1;
+    }
+    if(abs(initialDistance)<abs(distanceToPoint(startOfDrive,current))){
+      distanceToGoalPos*=-1;
+    }
+
+
+
+    baseVoltage = straightPID.getOutput(-distanceToGoalPos);
+
+
+    angleAdjustment = angleAdjustPID.getOutput(error.angle);
+
+
+      rightFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+      rightBackMotor.moveVoltage(baseVoltage-angleAdjustment);
+      leftFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+      leftBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+
+
+
+
+
+    if(abs(distanceToGoalPos)<1.5){
+      x+=1;
+    }
+    else{
+      x = 0;
+    }
+
+    if(x>6){
+      break;
+    }
+
+    if(drivetrainDebug){
+      outputStr = "Input:"+std::to_string(distanceToGoalPos)+ "\nOutput: "+std::to_string(baseVoltage)+ "\nAngle Error"+std::to_string(radiansToDegrees(error.angle))+"\nAngle Adjustment:"+std::to_string(angleAdjustment)+"\nCurrent Angle:"+std::to_string(radiansToDegrees(current.angle))+"\nInitial Distance:"+std::to_string(initialDistance)+"\nDistance from start point:"+std::to_string(distanceToPoint(current,startOfDrive));
+      lv_label_set_text(labelX,outputStr.c_str());
+      master.setText(0,0,outputStr);
+    }
 
     pros::delay(20);
 

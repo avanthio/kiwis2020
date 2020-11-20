@@ -7,13 +7,13 @@ bool trackingDebug = false;
 //The wall behind the robot is where 0,0 is
 //PI/2 radians (90 deg) is where the robot is perpendicular to the wall
 //The range for the angle of the robot is -pi, pi.
-struct Position position{0,0,M_PI_2};
+struct Position position{55.5,7.5,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
 constexpr double offsetLeft = 3.595;
 constexpr double offsetRight = 3.595;
-constexpr double offsetBack = 6.125;
+constexpr double offsetBack = 6.375;
 //distance between left and right wheels
-constexpr double distBetweenLandR = 7.4;
+constexpr double distBetweenLandR = 7.25;
 
 //last encoder value for each wheel
 double lastLeftEncVal = 0;
@@ -62,7 +62,7 @@ double limitAngle(double angle) {
         while (angle > M_PI) {
             angle -= 2 * M_PI;
         }
-        while (angle <= -M_PI) {
+        while (angle < -M_PI) {
             angle += 2 * M_PI;
         }
     }
