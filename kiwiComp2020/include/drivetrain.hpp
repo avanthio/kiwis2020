@@ -3,6 +3,8 @@
 
 /*extern void moveForward(double goalDistance, int velocityPCT);
 extern void turnForDegrees(double degreeGoal, int turnVelocityPCT);*/
+extern KiwiPID straightPID;
+extern KiwiPID turnPID;
 extern void setUpPIDs();
 extern double calcHeadingToGoalPos(struct Position curr,struct Position goal);
 extern void turnToFacePosition(double);

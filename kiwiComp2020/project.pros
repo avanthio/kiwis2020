@@ -301,6 +301,11 @@
                 "version": "4.1.0"
             }
         },
-        "upload_options": {}
+        "upload_options": {
+            "compress_bin": true,
+            "description": "Dual Driver Progranm",
+            "remote_name": "kiwiCompDualDriver",
+            "slot": 2
+        }
     }
 }

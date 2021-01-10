@@ -14,17 +14,13 @@
 //therefore, the setpoints are set in the PID setup function
 
 
-//set this to true if printing to brain from drivetrain function.
-//if printing something else, set this to false.
-bool drivetrainDebug = true;
 
 //These are the PIDs used to control the voltage for the drivetrain motors.
 //There is one for turning and one for going straight
-//They are not tuned yet
 
-KiwiPID turnPID(17000,500,10000); //17750,200,2//1700,500,10000(better?)
-KiwiPID straightPID(1000,1,20);
-KiwiPID angleAdjustPID(25000,0,0);
+KiwiPID turnPID(17000,500,10000); //17750,200,2//17000,500,10000(better?)
+KiwiPID straightPID(1500,20,20);//1000,1,20
+KiwiPID angleAdjustPID(30000,0,0);
 
 
 std::string pidData;
@@ -75,16 +71,23 @@ bool whichWayToTurn(double currHeading, double goalHeading){
   return false;
 }
 
+struct Position newGoal(Position curr, Position goal, double angleErr) {
+    Position newG;
+    Position midPoint;
+    midPoint.x = (curr.x + goal.x) / 2;
+    midPoint.y = (curr.y + goal.y) / 2;
+    std::cout << midPoint.x << '\n';
+    std::cout << midPoint.y << '\n';
+    double distToGoal = distanceToPoint(curr, goal);
 
-/*
-//calculate the number of steps needed based on the time spent to accelerate and the delay in the loop
-int calcStep(int timeToAccel){
-  return timeToAccel/10;
+    double theta = limitAngle(2 * angleErr);
+
+    newG.x = midPoint.x + (distToGoal/2 * sin(theta));
+    newG.y = midPoint.y + (distToGoal/2 * cos(theta));
+
+    return newG;
 }
-int calcAccel(int goalVelocity){//calculates the velocity increase per step based on # of steps and goal velocity
-  int accelTime = 300;
-  return goalVelocity/(calcStep(accelTime));
-}*/
+
 
 //calculate the necessary heading of the robot to reach a goal position,
 //based on current position and goal position
@@ -154,7 +157,6 @@ void turnToFacePosition(double headingToFacePos){
   struct Position current;
   int actualVoltage;
   struct Position error;
-  //save the original error to decide which side of the drivetrain goes forward and which side goes backward to start out
   std::string outputStr;
 
   while(1){
@@ -176,16 +178,17 @@ void turnToFacePosition(double headingToFacePos){
       rightBackMotor.moveVoltage(-actualVoltage);
 
 
-    if(abs(error.angle)<degreesToRadians(0.75)){
+    if(abs(error.angle)<degreesToRadians(1.5)){
       x+=1;
     }
     else{
       x = 0;
     }
 
-    if(x>10){
+    //put this back!!
+    /*if(x>10){
       break;
-    }
+    }*/
 
 
 
@@ -202,8 +205,9 @@ void turnToFacePosition(double headingToFacePos){
 }
 
 
-//this one doesn't have the PID added yet, and cannot go backwards. I still need to fix it
-//It is supposed to drive (straight) to a point.
+//input your goal position to drive to.
+//might behave strangely if not turned towards/away from point first
+//bool reversed defaults to false.
 void goToPosition(struct Position goal, bool reversed){
   if(drivetrainDebug){
     lv_obj_clean(lv_scr_act());
@@ -230,6 +234,10 @@ void goToPosition(struct Position goal, bool reversed){
   int angleAdjustment = 0;
   int baseVoltage = 0;
   std::string outputStr;
+  double pastThreeErrorSum = 0;
+  double errAverage = 0;
+  double previousErrAverage = 0;
+  int loopCount = 0;
 
   while(1){
     current = position;
@@ -255,8 +263,23 @@ void goToPosition(struct Position goal, bool reversed){
 
     baseVoltage = straightPID.getOutput(-distanceToGoalPos);
 
-
-    angleAdjustment = angleAdjustPID.getOutput(error.angle);
+    if(abs(distanceToGoalPos)>5){
+      angleAdjustment = angleAdjustPID.getOutput(error.angle);
+    }
+    else{
+      angleAdjustment = 0;
+      pastThreeErrorSum += distanceToGoalPos;
+      if(loopCount%6 == 0){
+        errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.1){
+          break;
+        }
+        previousErrAverage = errAverage;
+        errAverage = 0;
+        pastThreeErrorSum = 0;
+      }
+      loopCount+=1;
+    }
 
 
       rightFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
@@ -268,7 +291,7 @@ void goToPosition(struct Position goal, bool reversed){
 
 
 
-    if(abs(distanceToGoalPos)<1.5){
+    if(abs(distanceToGoalPos)<0.5){
       x+=1;
     }
     else{

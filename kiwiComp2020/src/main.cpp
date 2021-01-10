@@ -11,11 +11,13 @@
 
 void initialize() {
 	pros::delay(100);
-	//create_buttons();
+	debugType();
+	if(buttons){
+		create_buttons();
+	}
 	setUpPIDs();
   setBrakeTypes();
   resetDevices();
-  pros::Task trackingTask(trackPosition);
 }
 
 /**
@@ -35,7 +37,9 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-  //selectionResult();
+	if(buttons){
+  	selectionResult();
+	}
 }
 
 /**
@@ -49,8 +53,14 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
+
+
 void autonomous() {
-	//runChosenAuton();
+	blueFrontAuton();
+	//testFunction();
+	if(buttons){
+		runChosenAuton();
+	}
 }
 
 /**
@@ -66,64 +76,13 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-
-void testFunction(){
-	struct Position goalPos{55.5,26,M_PI};
-	goToPosition(goalPos);
-	turnToFacePosition(M_PI);
-	Intake.moveVelocity(200);
-	goalPos = {24,24,M_PI};
-	goToPosition(goalPos);
-	Intake.moveVelocity(0);
-	Position current = position;
-	goalPos = {17,17,M_PI};
-	turnToFacePosition(calcHeadingToGoalPos(current, goalPos));
-	topConveyorMotor.moveVelocity(600);
-	bottomConveyorMotor.moveVelocity(200);
-	pros::delay(500);
-	goToPosition(goalPos);
-	bottomConveyorMotor.moveVelocity(200);
-	pros::delay(500);
-	Intake.moveVelocity(200);
-	topConveyorMotor.moveVelocity(600);
-	pros::delay(1000);
-	Intake.moveVelocity(0);
-	topConveyorMotor.moveVelocity(0);
-	bottomConveyorMotor.moveVelocity(0);
-	goalPos = {26,26,M_PI};
-	goToPosition(goalPos,true);
-	Intake.moveVelocity(200);
-	pros::delay(2000);
-	Intake.moveVelocity(-200);
-	topConveyorMotor.moveVelocity(600);
-	bottomConveyorMotor.moveVelocity(200);
-	pros::delay(5000);
-	Intake.moveVelocity(0);
-	topConveyorMotor.moveVelocity(0);
-	bottomConveyorMotor.moveVelocity(0);
-	goalPos = {56,74,M_PI};
-	current = position;
-	double headingToGoalPos = calcHeadingToGoalPos(current, goalPos);
-	Intake.moveVelocity(200);
-	turnToFacePosition(headingToGoalPos);
-	goToPosition(goalPos);
-	bottomConveyorMotor.moveVelocity(200);
-	turnToFacePosition(M_PI);
-	goalPos = {28,74,M_PI};
-	goToPosition(goalPos);
-	topConveyorMotor.moveVelocity(600);
-	pros::delay(500);
-	Intake.moveVelocity(0);
-	pros::delay(2000);
-	topConveyorMotor.moveVelocity(0);
-	goalPos = {56,74,M_PI};
-	goToPosition(goalPos,true);
-
-
+void testFunct(){
+	leftFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+	rightBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+	rightFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+	leftBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
 }
-
 void opcontrol() {
-	//testFunction();
 
 	int x = 0;
   int y = 0;
@@ -153,6 +112,7 @@ void opcontrol() {
       leftBackSpeed = axis3;
       rightFrontSpeed = axis2;
       rightBackSpeed = axis2;
+			master.setText(1,1,"tank drive  ");
     }
     else{
       axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*200;
@@ -162,6 +122,7 @@ void opcontrol() {
       leftBackSpeed = axis3+axis4;
       rightFrontSpeed = axis3-axis4;
       rightBackSpeed = axis3-axis4;
+		  master.setText(1,1,"arcade drive");
 
     }
 
@@ -196,14 +157,14 @@ void opcontrol() {
 			topConveyorMotor.moveVelocity(600);
 		}
 		else if(conveyorReverseBtn.isPressed()){
-			topConveyorMotor.moveVelocity(-200);
+			topConveyorMotor.moveVelocity(-400);
 		}
 		else{
 			topConveyorMotor.moveVelocity(0);
 		}
 
 		if(conveyorBottomBtn.isPressed()){
-			bottomConveyorMotor.moveVelocity(200);
+			bottomConveyorMotor.moveVelocity(600);
 		}
 		else{
 			bottomConveyorMotor.moveVelocity(0);

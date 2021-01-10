@@ -3,6 +3,7 @@
 #include "main.h"
 
 extern okapi::Controller master;
+extern okapi::Controller partner;
 extern okapi::ControllerButton driveSwitchBtn;
 extern okapi::ControllerButton conveyorReverseBtn;
 extern okapi::ControllerButton intakeInBtn;

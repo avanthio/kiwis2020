@@ -1,7 +1,8 @@
 #pragma once
 #include "main.h"
 
-void redFrontAuton();
-void redBackAuton();
-void blueFrontAuton();
-void blueBackAuton();
+extern void redFrontAuton();
+extern void redBackAuton();
+extern void blueFrontAuton();
+extern void blueBackAuton();
+extern void autonSkills();

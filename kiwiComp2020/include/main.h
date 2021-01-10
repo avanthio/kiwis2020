@@ -75,7 +75,7 @@ void opcontrol(void);
 /**
  * You can add C++-only headers here
  */
-
+#include "debug.hpp"
 #include "device_setup.hpp"
 #include "screen_management.hpp"
 #include "pid.hpp"

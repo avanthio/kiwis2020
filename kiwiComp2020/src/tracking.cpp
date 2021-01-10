@@ -1,19 +1,16 @@
 #include "tracking.hpp"
 
-//set to true if printing tracking data to brain screen.
-//Must be false if printing something else.
-bool trackingDebug = false;
 
 //The wall behind the robot is where 0,0 is
 //PI/2 radians (90 deg) is where the robot is perpendicular to the wall
 //The range for the angle of the robot is -pi, pi.
-struct Position position{55.5,7.5,M_PI_2};
+struct Position position{34.75,7.5,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
-constexpr double offsetLeft = 3.595;
-constexpr double offsetRight = 3.595;
-constexpr double offsetBack = 6.375;
+constexpr double offsetLeft = 3.75;
+constexpr double offsetRight = 3.75;
+constexpr double offsetBack = 5.5;
 //distance between left and right wheels
-constexpr double distBetweenLandR = 7.25;
+constexpr double distBetweenLandR = 7.5;
 
 //last encoder value for each wheel
 double lastLeftEncVal = 0;
@@ -138,8 +135,8 @@ void trackPosition(){
     cosTotalAngle = cos(totalAngle);
 
     //calculate the change in the robot's absolute position on the field since the last cycle
-    changeInX = distTravelled*cosTotalAngle+distTravelledBackWheel*cosTotalAngle;
-    changeInY = distTravelled*sinTotalAngle+distTravelledBackWheel*-sinTotalAngle;
+    changeInX = distTravelled*cosTotalAngle+distTravelledBackWheel*sinTotalAngle;
+    changeInY = distTravelled*sinTotalAngle+distTravelledBackWheel*-cosTotalAngle;
 
     //add the change in the robot's position from this cycle
     //to its absolute position after the last cycle
@@ -158,7 +155,6 @@ void trackPosition(){
           robotAngleInDegrees = radiansToDegrees(position.angle);
           trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
           lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
-          master.setText(1, 1, std::to_string(currBackEncVal)+" "+std::to_string(currLeftEncVal));
       }
     }
 

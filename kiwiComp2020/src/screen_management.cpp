@@ -172,7 +172,7 @@ void create_buttons() {
   labelBTwo = lv_label_create(btnBTwo, NULL);
   lv_label_set_text(labelBTwo, stringBTwo.c_str());
 
-	/*btnAS = lv_btn_create(lv_scr_act(),NULL);
+	btnAS = lv_btn_create(lv_scr_act(),NULL);
 	lv_obj_set_size(btnAS, width, height);
   lv_obj_set_free_num(btnAS, 5);
 	lv_btn_set_action(btnAS, LV_BTN_ACTION_PR, btn_press_action);
@@ -183,7 +183,7 @@ void create_buttons() {
 	labelAS = lv_label_create(btnAS,NULL);
 	lv_label_set_text(labelAS, "Auton Skills");
 
-  btnPageFlipOne = lv_btn_create(lv_scr_act(),NULL);
+  /*btnPageFlipOne = lv_btn_create(lv_scr_act(),NULL);
   lv_obj_set_size(btnPageFlipOne, width, height);
   lv_obj_set_free_num(btnPageFlipOne, 6);
   lv_btn_set_action(btnPageFlipOne, LV_BTN_ACTION_PR, btn_press_action_alt);
@@ -256,9 +256,9 @@ switch(programRun){
     lv_label_set_text(labelDec, "Blue Right");
   break;
 
-  /*case 5:
+  case 5:
     lv_label_set_text(labelDec, "Auton Skills");
-  break;*/
+  break;
 
   case 0:
     lv_label_set_text(labelDec, "error");
@@ -292,6 +292,10 @@ void runChosenAuton(){
 
     case 4:
       blueFrontAuton();
+    break;
+
+    case 5:
+      autonSkills();
     break;
 
 
