@@ -56,11 +56,11 @@ void competition_initialize() {
 
 
 void autonomous() {
-	blueFrontAuton();
-	//testFunction();
-	if(buttons){
+
+	blueBackAuton();
+	/*if(buttons){
 		runChosenAuton();
-	}
+	}*/
 }
 
 /**
@@ -105,8 +105,8 @@ void opcontrol() {
 		}
 
     if(driveSam){
-		axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*200;
-		axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*200;
+			axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
+			axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*12000;
 
 		  leftFrontSpeed = axis3;
       leftBackSpeed = axis3;
@@ -115,8 +115,8 @@ void opcontrol() {
 			master.setText(1,1,"tank drive  ");
     }
     else{
-      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*200;
-  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*200;
+      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
+  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*12000;
 
       leftFrontSpeed = axis3+axis4;
       leftBackSpeed = axis3+axis4;
@@ -126,10 +126,10 @@ void opcontrol() {
 
     }
 
-		leftFrontMotor.moveVelocity(leftFrontSpeed);
-		leftBackMotor.moveVelocity(leftBackSpeed);
-		rightFrontMotor.moveVelocity(rightFrontSpeed);
-		rightBackMotor.moveVelocity(rightBackSpeed);
+		leftFrontMotor.moveVoltage(leftFrontSpeed);
+		leftBackMotor.moveVoltage(leftBackSpeed);
+		rightFrontMotor.moveVoltage(rightFrontSpeed);
+		rightBackMotor.moveVoltage(rightBackSpeed);
 
 
 		if(intakeInBtn.isPressed()){
@@ -156,7 +156,7 @@ void opcontrol() {
     if(conveyorTopBtn.isPressed()){
 			topConveyorMotor.moveVelocity(600);
 		}
-		else if(conveyorReverseBtn.isPressed()){
+		else if(conveyorTopReverseBtn.isPressed()){
 			topConveyorMotor.moveVelocity(-400);
 		}
 		else{
@@ -165,6 +165,9 @@ void opcontrol() {
 
 		if(conveyorBottomBtn.isPressed()){
 			bottomConveyorMotor.moveVelocity(600);
+		}
+		else if(conveyorBottomReverseBtn.isPressed()){
+			bottomConveyorMotor.moveVelocity(-600);
 		}
 		else{
 			bottomConveyorMotor.moveVelocity(0);

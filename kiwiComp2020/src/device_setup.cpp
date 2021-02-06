@@ -6,7 +6,8 @@ okapi::ControllerButton intakeInBtn(okapi::ControllerId::partner,okapi::Controll
 okapi::ControllerButton intakeStopBtn(okapi::ControllerId::partner,okapi::ControllerDigital::L2);
 okapi::ControllerButton conveyorTopBtn(okapi::ControllerId::partner,okapi::ControllerDigital::R2);
 okapi::ControllerButton conveyorBottomBtn(okapi::ControllerId::partner,okapi::ControllerDigital::R1);
-okapi::ControllerButton conveyorReverseBtn(okapi::ControllerId::partner,okapi::ControllerDigital::B);
+okapi::ControllerButton conveyorTopReverseBtn(okapi::ControllerId::partner,okapi::ControllerDigital::B);
+okapi::ControllerButton conveyorBottomReverseBtn(okapi::ControllerId::partner, okapi::ControllerDigital::A);
 okapi::ControllerButton driveSwitchBtn(okapi::ControllerId::master,okapi::ControllerDigital::down);
 okapi::ControllerButton intakeReverseBtn(okapi::ControllerId::partner,okapi::ControllerDigital::left);
 

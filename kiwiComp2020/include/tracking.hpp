@@ -7,6 +7,7 @@ struct Position{
   double x;
   double y;
   double angle;
+  bool reversed = false;
 };
 
 constexpr double trackingWheelCircumference = 3.25*M_PI;
