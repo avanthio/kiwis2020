@@ -1,5 +1,6 @@
 #include "drivetrain.hpp"
 
+static lv_obj_t* labelX;
 
 //IMPORTANT NOTES FOR DRIVETRAIN CODE:
 //The input for all functions related to the angle of the robot must be in radians!!!
@@ -12,15 +13,12 @@
 //the PID must be reset every time it is used (reset outputs and stored values, not gains)
 //The setpoint (goal for the PID) is always 0 because the input is the current error
 //therefore, the setpoints are set in the PID setup function
-
-
-
-//These are the PIDs used to control the voltage for the drivetrain motors.
-//There is one for turning and one for going straight
-
 KiwiPID turnPID(17000,500,20000); //17750,200,2//17000,500,10000(better?)
 KiwiPID straightPID(1500,20,20);//1000,1,20
 KiwiPID angleAdjustPID(30000,0,0);
+
+
+
 
 
 std::string pidData;
@@ -129,6 +127,15 @@ double calcHeadingToGoalPos(struct Position curr, struct Position goal) {
         }
     }
     theta = limitAngle(theta);
+
+    if(drivetrainDebug){
+      lv_obj_clean(lv_scr_act());
+      labelX = lv_label_create(lv_scr_act(),NULL);
+      pros::delay(1000);
+      std::string thetaStr = std::to_string(theta);
+      lv_label_set_text(labelX, thetaStr.c_str());
+    }
+
     return theta;
 }
 
@@ -138,9 +145,8 @@ double calcHeadingToGoalPos(struct Position curr, struct Position goal) {
 //If you want to face away from a point,remember to set reversed (in structure) to true
 //If you want to face a certain heading, use the turn to face heading function
 //(which doesn't exist lol)
-static lv_obj_t* labelX;
 
-void turnToFacePosition(Position goal){
+void turnToFacePosition(double goalHeading){
   int time = 0;
 
   if(drivetrainDebug){
@@ -153,11 +159,6 @@ void turnToFacePosition(Position goal){
   int x = 0;
   struct Position current = position;
   int timeInRange = 0;
-  double headingToFacePos;
-  headingToFacePos = calcHeadingToGoalPos(current,goal);
-  if(goal.reversed){
-    headingToFacePos = limitAngle(calcHeadingToGoalPos(current,goal)+M_PI);
-  }
   int actualVoltage;
   struct Position error;
   std::string outputStr;
@@ -165,7 +166,7 @@ void turnToFacePosition(Position goal){
   while(1){
 
     current = position;
-    error.angle = limitAngle(headingToFacePos-current.angle);
+    error.angle = limitAngle(goalHeading-current.angle);
 
     actualVoltage = turnPID.getOutput(error.angle);
 
@@ -212,7 +213,7 @@ void turnToFacePosition(Position goal){
 //input your goal position to drive to.
 //might behave strangely if not turned towards/away from point first
 //bool reversed defaults to false.
-void goToPosition(struct Position goal){
+void goToPosition(struct Position goal, bool reversed){
   if(drivetrainDebug){
     lv_obj_clean(lv_scr_act());
     labelX = lv_label_create(lv_scr_act(),NULL);
@@ -225,11 +226,11 @@ void goToPosition(struct Position goal){
   struct Position current = position;
   Position startOfDrive = current;
   double headingToGoalPos = calcHeadingToGoalPos(current,goal);
-  if(goal.reversed){
+  if(reversed){
     headingToGoalPos=limitAngle(headingToGoalPos+M_PI);
   }
   double distanceToGoalPos = distanceToPoint(current,goal);
-  if(goal.reversed){
+  if(reversed){
     distanceToGoalPos*=-1;
   }
   double initialDistance = distanceToGoalPos;
@@ -248,7 +249,7 @@ void goToPosition(struct Position goal){
     //positionData.give();
 
     headingToGoalPos = calcHeadingToGoalPos(current, goal);
-    if(goal.reversed){
+    if(reversed){
       headingToGoalPos = limitAngle(headingToGoalPos+M_PI);
     }
 
@@ -256,7 +257,7 @@ void goToPosition(struct Position goal){
     error.angle = limitAngle(error.angle);
 
     distanceToGoalPos = distanceToPoint(current,goal);
-    if(goal.reversed){
+    if(reversed){
       distanceToGoalPos*=-1;
     }
     if(abs(initialDistance)<abs(distanceToPoint(startOfDrive,current))){
