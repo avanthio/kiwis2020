@@ -28,8 +28,8 @@ std::string pidData;
 void setUpPIDs(){
   turnPID.setMaxOutput(8000);
   turnPID.setMinOutput(-8000);
-  straightPID.setMaxOutput(8000);
-  straightPID.setMinOutput(-8000);
+  straightPID.setMaxOutput(9000);
+  straightPID.setMinOutput(-9000);
   angleAdjustPID.setMaxOutput(3000);
   angleAdjustPID.setMinOutput(-3000);
   turnPID.setSetpoint(0);
