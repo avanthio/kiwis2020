@@ -99,12 +99,6 @@ void opcontrol() {
 	while(true){
 
 
-
-    if (driveSwitchBtn.changedToPressed()){
-			driveSam = !driveSam;
-		}
-
-    if(driveSam){
 			axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
 			axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*12000;
 
@@ -113,18 +107,7 @@ void opcontrol() {
       rightFrontSpeed = axis2;
       rightBackSpeed = axis2;
 			master.setText(1,1,"tank drive  ");
-    }
-    else{
-      axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
-  		axis4 = master.getAnalog(okapi::ControllerAnalog::leftX)*12000;
-
-      leftFrontSpeed = axis3+axis4;
-      leftBackSpeed = axis3+axis4;
-      rightFrontSpeed = axis3-axis4;
-      rightBackSpeed = axis3-axis4;
-		  master.setText(1,1,"arcade drive");
-
-    }
+  
 
 		leftFrontMotor.moveVoltage(leftFrontSpeed);
 		leftBackMotor.moveVoltage(leftBackSpeed);
@@ -133,16 +116,16 @@ void opcontrol() {
 
 
 		if(intakeInBtn.isPressed()){
-			x=1;
-		}
-		else if(intakeStopBtn.isPressed()){
-			x=0;
+			Intake.moveVelocity(200);
 		}
     else if(intakeReverseBtn.isPressed()){
-      x=-1;
+      Intake.moveVelocity(-200);
     }
+		else{
+			Intake.moveVelocity(0);
+		}
 
-    switch(x){
+    /*switch(x){
       case 1:
         Intake.moveVelocity(200);
         break;
@@ -151,7 +134,7 @@ void opcontrol() {
         break;
       case -1:
         Intake.moveVelocity(-200);
-    }
+    }*/
 
     if(conveyorTopBtn.isPressed()){
 			topConveyorMotor.moveVelocity(600);
