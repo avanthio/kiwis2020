@@ -11,13 +11,10 @@
 
 void initialize() {
 	pros::delay(100);
-	debugType();
-	if(buttons){
-		create_buttons();
-	}
 	setUpPIDs();
   setBrakeTypes();
   resetDevices();
+	debugType();
 }
 
 /**
@@ -25,7 +22,9 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	pros::delay(100);
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -37,9 +36,6 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-	if(buttons){
-  	selectionResult();
-	}
 }
 
 /**
@@ -53,11 +49,11 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-
+//asdfasdfkasdf
 
 void autonomous() {
 
-	blueBackAuton();
+	autonSkills();
 	/*if(buttons){
 		runChosenAuton();
 	}*/
@@ -107,7 +103,7 @@ void opcontrol() {
       rightFrontSpeed = axis2;
       rightBackSpeed = axis2;
 			master.setText(1,1,"tank drive  ");
-  
+
 
 		leftFrontMotor.moveVoltage(leftFrontSpeed);
 		leftBackMotor.moveVoltage(leftBackSpeed);
@@ -116,16 +112,21 @@ void opcontrol() {
 
 
 		if(intakeInBtn.isPressed()){
-			Intake.moveVelocity(200);
+			x=1;
+			//Intake.moveVelocity(200);
 		}
     else if(intakeReverseBtn.isPressed()){
-      Intake.moveVelocity(-200);
+			x=-1;
+      //Intake.moveVelocity(-200);
     }
-		else{
-			Intake.moveVelocity(0);
+		else if(intakeStopBtn.isPressed()){
+			x=0;
 		}
+		/*else{
+			Intake.moveVelocity(0);
+		}*/
 
-    /*switch(x){
+    switch(x){
       case 1:
         Intake.moveVelocity(200);
         break;
@@ -134,7 +135,8 @@ void opcontrol() {
         break;
       case -1:
         Intake.moveVelocity(-200);
-    }*/
+				break;
+    }
 
     if(conveyorTopBtn.isPressed()){
 			topConveyorMotor.moveVelocity(600);

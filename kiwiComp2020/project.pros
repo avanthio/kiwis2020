@@ -306,9 +306,9 @@
         },
         "upload_options": {
             "compress_bin": true,
-            "description": "Dual Driver Program",
-            "remote_name": "kiwiCompSingleDriver",
-            "slot": 3
+            "description": "one goal auton",
+            "remote_name": "kiwiCompOneGoal",
+            "slot": 4
         }
     }
 }

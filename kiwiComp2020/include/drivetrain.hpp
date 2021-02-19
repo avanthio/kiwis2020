@@ -10,7 +10,8 @@ extern void turnForDegrees(double degreeGoal, int turnVelocityPCT);*/
 
 extern void setUpPIDs();
 extern double calcHeadingToGoalPos(struct Position curr,struct Position goal);
-extern void turnToFacePosition(double goalHeading);
-extern void goToPosition(struct Position goal, bool reversed = false);
-//extern void goToPositions(struct Position points[2]);
+extern void turnToFacePosition(Position goal);
+extern void turnToFaceHeading(double goalHeading);
+extern void goToPosition(struct Position goal);
+extern void goToPositions(const std::vector<struct Position>& points);
 extern void printToSD();

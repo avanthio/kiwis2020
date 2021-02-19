@@ -76,10 +76,10 @@ void setStartPoint(Position startPoint){
 
 //track the position of the robot using tracking wheel encoder values and math
 void trackPosition(){
-  if(trackingDebug ){
+  //if(trackingDebug ){
     lv_obj_clean(lv_scr_act());
     labelTrackingDebug = lv_label_create(lv_scr_act(), NULL);
-  }
+  //}
 
   double currLeftEncVal;
   double currRightEncVal;
@@ -96,6 +96,10 @@ void trackPosition(){
   double sinTotalAngle;
   double cosTotalAngle;
   double halfChangeInAngle;
+  leftTrackingWheel.reset();
+  rightTrackingWheel.reset();
+  backTrackingWheel.reset();
+  pros::delay(40);
 
   while(tracking){
     //get and store all the tracking wheel encoder values in variables
@@ -149,14 +153,14 @@ void trackPosition(){
     position.y+=changeInY;
     //positionData.give();
 
-    if(trackingDebug){
+   if(trackingDebug){
       //print some information to screens for debugging purposes (angle and coordinates of robot)
       if(loopNumber%20){
           robotAngleInDegrees = radiansToDegrees(position.angle);
           trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
           lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
       }
-    }
+  }
 
     //set the last encoder value equal to the current encoder value;
     lastLeftEncVal = currLeftEncVal;

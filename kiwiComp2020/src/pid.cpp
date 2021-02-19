@@ -13,8 +13,10 @@ void KiwiPID::init(){
 	d=0;
 
 	iMax = 0;
+  iMin = 0;
+  deadzone = 0;
 	errorSum = 0;
-  minErrForI = 0;
+  maxErrForI = 0;
   lastError = 0;
 	maxOutput = 0;
 	minOutput = 0;
@@ -30,11 +32,12 @@ void KiwiPID::reset(){
 	errorSum = 0;
   lastError = 0;
   rawOutput = 0;
+  iOutp = 0;
 }
 
-//sets how much the error can be before the PID starts using integral
-void KiwiPID::setMinErrForI(double minErrFrI){
-  minErrForI = minErrFrI;
+//sets how small the error must before the PID starts using integral
+void KiwiPID::setMaxErrForI(double maxErrFrI){
+  maxErrForI = maxErrFrI;
 }
 
 //sets the goal for the PID
@@ -42,9 +45,17 @@ void KiwiPID::setSetpoint(double setpnt){
   setpoint = setpnt;
 }
 
+void KiwiPID::setDeadzone(double deadZne){
+  deadzone = deadZne;
+}
+
 //set the maximum output of the integral portion of the PID
 void KiwiPID::setIMax(double IMaximum){
   iMax = IMaximum;
+}
+
+void KiwiPID::setIMin(double IMinimum){
+  iMin = IMinimum;
 }
 
 void KiwiPID::setMaxOutput(double maxOut){
@@ -59,6 +70,18 @@ double KiwiPID::getRawOutput(){
   return rawOutput;
 }
 
+double KiwiPID::getiOutput(){
+  return iOutp;
+}
+
+double KiwiPID::getpOutput(){
+  return pOutp;
+}
+
+double KiwiPID::getdOutput(){
+  return dOutp;
+}
+
 double KiwiPID::getOutput(double actual){
   double output;
   double pOutput;
@@ -69,18 +92,20 @@ double KiwiPID::getOutput(double actual){
 
   pOutput = error*p;
 
-  errorSum += error;
+  if(abs(error)<maxErrForI){
+    errorSum += error;
+  }
+  else{
+    errorSum = 0;
+  }
 
   if(error*lastError<0){
     errorSum = 0;
   }
 
-  /*if(abs(error)*lastError<minErrForI){
-    errorSum = 0;
-  }*/
-
   iOutput = errorSum*i;
 
+  //limit integral output to certain range
   if(iOutput>iMax){
     errorSum = iMax/i;
     iOutput = iMax;
@@ -90,6 +115,18 @@ double KiwiPID::getOutput(double actual){
     errorSum = -iMax/i;
     iOutput = -iMax;
   }
+
+  //make it so that if the integral output is very small and the error is in a certain range
+  //the integral jumps to a minimum value
+  if(abs(iOutput)<iMin&&error<maxErrForI&&error>0){
+    iOutput = iMin+iOutput;
+    errorSum = iMin/i;
+  }
+  else if(abs(iOutput)<iMin&&error>-maxErrForI&&error<0){
+    iOutput = -iMin+iOutput;
+    errorSum = -iMin/i;
+  }
+
 
   dOutput = (error-lastError)*d;
 
@@ -104,7 +141,15 @@ double KiwiPID::getOutput(double actual){
     output = minOutput;
   }
 
-  lastError = error;
+  //this seems to be working correctly (i think?)
+  if(abs(error)<deadzone){
+    output = 0;
+    errorSum = 0;
+  }
 
+  lastError = error;
+  iOutp = iOutput;
+  pOutp = pOutput;
+  dOutp = dOutput;
   return output;
 }

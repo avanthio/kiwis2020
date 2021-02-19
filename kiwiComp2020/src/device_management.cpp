@@ -19,8 +19,5 @@ void resetDevices(){
   rightFrontMotor.tarePosition();
   topConveyorMotor.tarePosition();
   bottomConveyorMotor.tarePosition();
-  leftTrackingWheel.reset();
-  rightTrackingWheel.reset();
-  backTrackingWheel.reset();
 
 }
