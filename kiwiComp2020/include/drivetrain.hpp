@@ -13,5 +13,7 @@ extern double calcHeadingToGoalPos(struct Position curr,struct Position goal);
 extern void turnToFacePosition(Position goal);
 extern void turnToFaceHeading(double goalHeading);
 extern void goToPosition(struct Position goal);
+extern void goToPositionContinuous(struct Position goal);
+extern void turnToFacePositionContinuous(struct Position goal);
 extern void goToPositions(const std::vector<struct Position>& points);
-extern void printToSD();
+extern void printToSD(std::string stringToSave);

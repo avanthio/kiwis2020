@@ -14,8 +14,8 @@ static lv_obj_t* labelX;
 //The setpoint (goal for the PID) is always 0 because the input is the current error
 //therefore, the setpoints are set in the PID setup function
 KiwiPID turnPID(17000,1000,20000); //17750,200,2//17000,500,10000(better?)
-KiwiPID straightPID(1000,0.5,20);//1000,1,20
-KiwiPID angleAdjustPID(30000,0,0);
+KiwiPID straightPID(1200,0.5,20);//1000,1,20
+KiwiPID angleAdjustPID(6000,500,0);
 
 
 
@@ -30,8 +30,9 @@ void setUpPIDs(){
   turnPID.setMinOutput(-12000);
   straightPID.setMaxOutput(8000);
   straightPID.setMinOutput(-8000);
-  angleAdjustPID.setMaxOutput(3000);
-  angleAdjustPID.setMinOutput(-3000);
+  angleAdjustPID.setMaxOutput(2000);
+  angleAdjustPID.setMinOutput(-2000);
+
   turnPID.setSetpoint(0);
   straightPID.setSetpoint(0);
   angleAdjustPID.setSetpoint(0);
@@ -44,10 +45,10 @@ void setUpPIDs(){
   straightPID.setIMin(0);
   straightPID.setMaxErrForI(1000);
   straightPID.setDeadzone(0);
-  angleAdjustPID.setIMax(7500);
+  angleAdjustPID.setIMax(6000);
   angleAdjustPID.setDeadzone(0);
   angleAdjustPID.setIMin(0);
-  angleAdjustPID.setMaxErrForI(0);
+  angleAdjustPID.setMaxErrForI(1000);
 
 
 }
@@ -290,6 +291,9 @@ void turnToFaceHeading(double goalHeading){
 //input your goal position to drive to.
 //might behave strangely if not turned towards/away from point first
 //bool reversed defaults to false.
+//input your goal position to drive to.
+//might behave strangely if not turned towards/away from point first
+//bool reversed defaults to false.
 void goToPosition(struct Position goal){
 
 
@@ -404,6 +408,167 @@ void goToPosition(struct Position goal){
 
 }
 
+
+
+void goToPositionContinuous(Position goal){
+  straightPID.reset();
+  angleAdjustPID.reset();
+  int x = 0;
+  int y = 0;
+  struct Position current = position;
+  Position startOfDrive = current;
+  double headingToGoalPos = calcHeadingToGoalPos(current,goal);
+  if(goal.reversed==true){
+    headingToGoalPos=limitAngle(headingToGoalPos+M_PI);
+  }
+  double distanceToGoalPos = distanceToPoint(current,goal);
+  if(goal.reversed==true){
+    distanceToGoalPos*=-1;
+  }
+  double initialDistance = distanceToGoalPos;
+  struct Position error;
+
+  int angleAdjustment = 0;
+  int baseVoltage = 0;
+  std::string outputStr;
+  double pastThreeErrorSum = 0;
+  double errAverage = 0;
+  double previousErrAverage = 0;
+  int loopCount = 0;
+  int count = 0;
+
+
+  if(drivetrainDebug){
+    lv_obj_clean(lv_scr_act());
+    labelX = lv_label_create(lv_scr_act(),NULL);
+  }
+
+  while(1){
+    current = position;
+    //positionData.give();
+
+    headingToGoalPos = calcHeadingToGoalPos(current, goal);
+    if(goal.reversed==true){
+      headingToGoalPos = limitAngle(headingToGoalPos+M_PI);
+    }
+
+    error.angle = headingToGoalPos-current.angle;
+    error.angle = limitAngle(error.angle);
+
+    distanceToGoalPos = distanceToPoint(current,goal);
+    if(goal.reversed==true){
+      distanceToGoalPos*=-1;
+    }
+    if(abs(initialDistance)<abs(distanceToPoint(startOfDrive,current))){
+      distanceToGoalPos*=-1;
+    }
+
+
+
+    baseVoltage = straightPID.getOutput(-distanceToGoalPos);
+
+    if(abs(distanceToGoalPos)>5){
+      angleAdjustment = angleAdjustPID.getOutput(error.angle);
+    }
+    else{
+      angleAdjustment = 0;
+      pastThreeErrorSum += distanceToGoalPos;
+      if(loopCount%6 == 0){
+        errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.25){
+          break;
+        }
+        previousErrAverage = errAverage;
+        errAverage = 0;
+        pastThreeErrorSum = 0;
+      }
+      loopCount+=1;
+    }
+
+      rightFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+      rightBackMotor.moveVoltage(baseVoltage-angleAdjustment);
+      leftFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+      leftBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+
+
+
+
+
+    if(abs(distanceToGoalPos)<0.5){
+      break;
+    }
+
+    if(drivetrainDebug){
+      outputStr = "Input:"+std::to_string(distanceToGoalPos)+ "\nOutput: "+std::to_string(baseVoltage)+ "\nAngle Error:"+std::to_string(error.angle)+ "\nP Output:"+std::to_string(straightPID.getpOutput())+"\nI Output:"+std::to_string(straightPID.getiOutput())+"\nD Output:"+std::to_string(straightPID.getdOutput());
+      lv_label_set_text(labelX,outputStr.c_str());
+      //master.setText(0,0,outputStr);
+    }
+
+    pros::delay(20);
+    count+=1;
+  }
+
+}
+
+void turnToFacePositionContinuous(struct Position goal){
+
+  int time = 0;
+
+  if(drivetrainDebug){
+    lv_obj_clean(lv_scr_act());
+    labelX = lv_label_create(lv_scr_act(),NULL);
+  }
+
+  turnPID.reset();
+
+  int x = 0;
+  double iOut = 0;
+  struct Position current = position;
+  int timeInRange = 0;
+  int actualVoltage;
+  struct Position error;
+  std::string outputStr;
+  double goalHeading = calcHeadingToGoalPos(current,goal);
+  if(goal.reversed){
+    goalHeading = limitAngle(goalHeading+M_PI);
+  }
+
+  while(1){
+
+    current = position;
+    error.angle = limitAngle(goalHeading-current.angle);
+
+    actualVoltage = turnPID.getOutput(error.angle);
+
+    iOut = turnPID.getiOutput();
+
+    if(drivetrainDebug){
+      outputStr = "Input:"+std::to_string(radiansToDegrees(error.angle))+ "   Output: "+std::to_string(actualVoltage) + "\nTime: "+std::to_string(time) + "\n I Output: "+std::to_string(iOut);
+      lv_label_set_text(labelX,outputStr.c_str());
+    }
+
+
+      leftFrontMotor.moveVoltage(actualVoltage);
+      leftBackMotor.moveVoltage(actualVoltage);
+      rightFrontMotor.moveVoltage(-actualVoltage);
+      rightBackMotor.moveVoltage(-actualVoltage);
+
+
+    if(abs(error.angle)<degreesToRadians(1.5)){
+      break;
+    }
+
+
+
+    pros::delay(20);
+    //Below is some stuff to help tune PID, don't worry about it too much.
+    time+=20;
+    pidData+=std::to_string(time)+','+std::to_string(turnPID.getRawOutput())+'\n';
+  }
+
+}
+
+
 void goToPositions(const std::vector<struct Position>& points){
 
   if(drivetrainDebug){
@@ -432,9 +597,13 @@ void goToPositions(const std::vector<struct Position>& points){
   double previousErrAverage = 0;
   int loopCount = 0;
 
+  int actualVoltage;
+  double goalHeading;
+
   for(size_t pointNo = 0; pointNo<(points.size()-1);pointNo+=1){
     straightPID.reset();
     angleAdjustPID.reset();
+    turnPID.reset();
     current = position;
     startOfDrive = current;
     distanceToGoalPos = distanceToPoint(current, points[pointNo]);
@@ -461,7 +630,7 @@ void goToPositions(const std::vector<struct Position>& points){
 
       angleAdjustment = angleAdjustPID.getOutput(error.angle);
 
-      if(abs(distanceToGoalPos)<10){
+      if(abs(distanceToGoalPos)<5){
         break;
       }
 
@@ -482,10 +651,47 @@ void goToPositions(const std::vector<struct Position>& points){
 
     }
 
+    if(pointNo+1<points.size()){
+
+      goalHeading = calcHeadingToGoalPos(current,points[pointNo+1]);
+      if(points[pointNo+1].reversed){
+        goalHeading = limitAngle(goalHeading+M_PI);
+      }
+
+      while(1){
+
+        current = position;
+        error.angle = limitAngle(goalHeading-current.angle);
+
+        actualVoltage = turnPID.getOutput(error.angle);
+
+
+
+
+          leftFrontMotor.moveVoltage(actualVoltage);
+          leftBackMotor.moveVoltage(actualVoltage);
+          rightFrontMotor.moveVoltage(-actualVoltage);
+          rightBackMotor.moveVoltage(-actualVoltage);
+
+
+        if(abs(error.angle)<degreesToRadians(1.5)){
+          break;
+        }
+
+
+
+
+        pros::delay(20);
+        //Below is some stuff to help tune PID, don't worry about it too much.
+
+      }
+
+    }
   }
 
   straightPID.reset();
   angleAdjustPID.reset();
+  turnPID.reset();
   current = position;
   startOfDrive = current;
   distanceToGoalPos = distanceToPoint(current, points[points.size()-1]);
@@ -567,9 +773,9 @@ void goToPositions(const std::vector<struct Position>& points){
 
 }
 
-void printToSD(){
+void printToSD(std::string stringToSave){
 
-  //!!lv_obj_clean(lv_scr_act());
+  lv_obj_clean(lv_scr_act());
   lv_obj_t* labelSDStatus;
   labelSDStatus = lv_label_create(lv_scr_act(),NULL);
 
@@ -577,11 +783,11 @@ void printToSD(){
     lv_label_set_text(labelSDStatus,"found an SD card");
     pros::delay(2000);
     FILE* usd_file_write;
-    usd_file_write = fopen("/usd/pidString.txt", "w");
+    usd_file_write = fopen("/usd/angleAdjust.txt", "w");
     int columnNumber = 0;
-    //!!lv_obj_clean(labelSDStatus);
+    lv_obj_clean(labelSDStatus);
 
-    fputs(pidData.c_str(),usd_file_write);
+    fputs(stringToSave.c_str(),usd_file_write);
     columnNumber = 0;
 
     fclose(usd_file_write);

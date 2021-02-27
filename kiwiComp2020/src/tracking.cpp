@@ -6,11 +6,11 @@
 //The range for the angle of the robot is -pi, pi.
 struct Position position{34.75,7.5,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
-constexpr double offsetLeft = 3.75;
-constexpr double offsetRight = 3.75;
-constexpr double offsetBack = 5.5;
+constexpr double offsetLeft = 7.54/2;
+constexpr double offsetRight = 7.54/2;
+constexpr double offsetBack = 5;
 //distance between left and right wheels
-constexpr double distBetweenLandR = 7.5;
+constexpr double distBetweenLandR = 7.54;
 
 //last encoder value for each wheel
 double lastLeftEncVal = 0;
@@ -76,10 +76,10 @@ void setStartPoint(Position startPoint){
 
 //track the position of the robot using tracking wheel encoder values and math
 void trackPosition(){
-  //if(trackingDebug ){
+  if(trackingDebug){
     lv_obj_clean(lv_scr_act());
     labelTrackingDebug = lv_label_create(lv_scr_act(), NULL);
-  //}
+  }
 
   double currLeftEncVal;
   double currRightEncVal;
@@ -96,9 +96,11 @@ void trackPosition(){
   double sinTotalAngle;
   double cosTotalAngle;
   double halfChangeInAngle;
+
   leftTrackingWheel.reset();
   rightTrackingWheel.reset();
   backTrackingWheel.reset();
+
   pros::delay(40);
 
   while(tracking){
@@ -168,7 +170,7 @@ void trackPosition(){
     lastRightEncVal = currRightEncVal;
 
     //a quick delay so the brain doesn't go crazy
-    pros::delay(10);
+    pros::delay(15); //previously 10 ms
     ++loopNumber;
   }
 }

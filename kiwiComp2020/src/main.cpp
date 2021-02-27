@@ -122,9 +122,7 @@ void opcontrol() {
 		else if(intakeStopBtn.isPressed()){
 			x=0;
 		}
-		/*else{
-			Intake.moveVelocity(0);
-		}*/
+
 
     switch(x){
       case 1:

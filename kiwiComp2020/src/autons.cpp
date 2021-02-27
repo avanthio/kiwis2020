@@ -4,17 +4,176 @@ void redFrontAuton(){
   position = {0,0,M_PI_2};
   pros::Task trackingTask(trackPosition);
   pros::delay(100);
-  turnToFaceHeading(degreesToRadians(80));
-  turnToFaceHeading(degreesToRadians(60));
-  turnToFaceHeading(degreesToRadians(30));
-  turnToFaceHeading(degreesToRadians(-30));
-  turnToFaceHeading(degreesToRadians(-120));
-  turnToFaceHeading(degreesToRadians(0));
+  struct Position goalPos = {0,84,0};
+  goToPosition(goalPos);
 
 
 }
 
 void redBackAuton(){
+
+  pros::Task trackingTask(trackPosition);
+  pros::delay(100);
+
+  Intake.moveVelocity(200);
+  bottomConveyorMotor.moveVelocity(200);
+ 	struct Position goalPos{34.75,24.9,0};
+ 	goToPositionContinuous(goalPos);
+ 	Intake.moveVelocity(0);
+ 	bottomConveyorMotor.moveVelocity(0);
+ 	Position current = position;
+  //Goal I
+ 	goalPos = {14.75,12.8,0};
+ 	turnToFacePositionContinuous(goalPos);
+ 	goToPosition(goalPos);
+ 	bottomConveyorMotor.moveVelocity(300);
+ 	topConveyorMotor.moveVelocity(600);
+ 	pros::delay(500);
+  bottomConveyorMotor.moveVelocity(0);
+  pros::delay(250);
+ 	topConveyorMotor.moveVelocity(0);
+ 	bottomConveyorMotor.moveVelocity(0);
+ 	current = position;
+ 	goalPos = {31.6,24.3,0,true};
+ 	//turnToFacePosition(goalHeading);
+ 	/*straightPID.setMaxOutput(5500);
+ 	straightPID.setMinOutput(-5500);*/
+ 	goToPosition(goalPos);
+ 	/*straightPID.setMaxOutput(7750);
+ 	straightPID.setMinOutput(-7750);*/
+ 	goalPos = {23.5,71.9,0};
+ 	Intake.moveVelocity(200);
+ 	bottomConveyorMotor.moveVelocity(600);
+ 	current = position;
+ 	turnToFacePositionContinuous(goalPos);
+ 	goToPosition(goalPos);
+  //goal H
+ 	goalPos = {17,72.5,0};
+ 	current = position;
+ 	turnToFacePosition(goalPos);
+ 	Intake.moveVelocity(0);
+ 	bottomConveyorMotor.moveVelocity(0);
+  /*straightPID.setMaxOutput(5500);
+ 	straightPID.setMinOutput(-5500);*/
+ 	goToPosition(goalPos);
+ 	/*straightPID.setMaxOutput(7750);
+ 	straightPID.setMinOutput(-7750);*/
+ 	topConveyorMotor.moveVelocity(600);
+ 	pros::delay(750);
+ 	topConveyorMotor.moveVelocity(0);
+  current = position;
+ 	goalPos = {30.1,71.9,0,true};
+ 	//turnToFacePosition(goalHeading);
+ 	/*straightPID.setMaxOutput(5500);
+ 	straightPID.setMinOutput(-5500);*/
+ 	goToPosition(goalPos);
+ 	/*straightPID.setMaxOutput(7750);
+ 	straightPID.setMinOutput(-7750);*/
+ 	current=position;
+ 	goalPos = {38.0,123.4,0};
+ 	turnToFacePositionContinuous(goalPos);
+ 	Intake.moveVelocity(200);
+ 	goToPositionContinuous(goalPos);
+ 	bottomConveyorMotor.moveVelocity(600);
+ 	Intake.moveVelocity(0);
+ 	current=position;
+  //goal G
+ 	goalPos = {17,131.7,0};
+ 	turnToFacePositionContinuous(goalPos);
+ 	bottomConveyorMotor.moveVelocity(0);
+ 	goToPosition(goalPos);
+ 	topConveyorMotor.moveVelocity(600);
+ 	pros::delay(750);
+ 	topConveyorMotor.moveVelocity(0);
+ 	current = position;
+ 	goalPos = {37.1,114,0,true};
+ 	turnToFacePositionContinuous(goalPos);
+ 	/*straightPID.setMaxOutput(5500);
+ 	straightPID.setMinOutput(-5500);*/
+ 	goToPositionContinuous(goalPos);
+ 	/*straightPID.setMaxOutput(7750);
+ 	straightPID.setMinOutput(-7750);*/
+ 	current = position;
+ 	goalPos = {75.7,92,0};
+ 	turnToFacePositionContinuous(goalPos);
+  Intake.moveVelocity(200);
+  bottomConveyorMotor.moveVelocity(600);
+ 	goToPositionContinuous(goalPos);
+  Intake.moveVelocity(0);
+  bottomConveyorMotor.moveVelocity(0);
+  current = position;
+  goalPos = {74,79,0,true};
+  turnToFacePositionContinuous(goalPos);
+  goToPositionContinuous(goalPos);
+  current = position;
+  //goal D
+ 	goalPos = {74,122,0};
+ //turnToFacePosition(goalHeading);
+ 	goToPosition(goalPos);
+ 	//bottomConveyorMotor.moveVelocity(600);
+ 	topConveyorMotor.moveVelocity(600);
+ 	pros::delay(750);
+ 	//bottomConveyorMotor.moveVelocity(0);
+ 	topConveyorMotor.moveVelocity(0);
+ 	goalPos = {75.7,100,0,true};
+ 	//turnToFacePosition(goalHeading);
+ 	goToPositionContinuous(goalPos);
+ 	current = position;
+ 	goalPos = {110.1,113,0};
+ 	turnToFacePositionContinuous(goalPos);
+ 	Intake.moveVelocity(200);
+ 	goToPositionContinuous(goalPos);
+ 	current = position;
+  //goal A
+ 	goalPos = {130.5,124,0};
+ 	bottomConveyorMotor.moveVelocity(600);
+ 	turnToFacePositionContinuous(goalPos);
+ 	Intake.moveVelocity(0);
+ 	goToPosition(goalPos);
+ 	bottomConveyorMotor.moveVelocity(0);
+ 	topConveyorMotor.moveVelocity(600);
+ 	pros::delay(750);
+ 	topConveyorMotor.moveVelocity(0);
+  //goal E?
+  current = position;
+  goalPos = {110,100,0,true};
+  turnToFacePosition(goalPos);
+  /*straightPID.setMaxOutput(5500);
+  straightPID.setMinOutput(-5500);*/
+  goToPosition(goalPos);
+  /*straightPID.setMaxOutput(7750);
+  straightPID.setMinOutput(-7750);*/
+  current = position;
+  goalPos = {78,77.0,0};
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
+  bottomConveyorMotor.moveVelocity(600);
+  topConveyorMotor.moveVelocity(600);
+  pros::delay(1000);
+  goalPos = {96,90,0,true};
+  goToPosition(goalPos);
+  bottomConveyorMotor.moveVelocity(0);
+  topConveyorMotor.moveVelocity(0);
+  goalPos = {93,65,0};
+  turnToFacePosition(goalPos);
+  Intake.moveVelocity(200);
+  goToPosition(goalPos);
+  goalPos = {115,65,0};
+  turnToFacePosition(goalPos);
+  bottomConveyorMotor.moveVelocity(500);
+  goToPosition(goalPos);
+  Intake.moveVelocity(0);
+  bottomConveyorMotor.moveVelocity(0);
+  goalPos = {125,65,0};
+  goToPosition(goalPos);
+  topConveyorMotor.moveVelocity(600);
+  pros::delay(750);
+  topConveyorMotor.moveVelocity(0);
+  goalPos = {110,65,0,true};
+  goToPosition(goalPos);
+  goalPos = {122,0,0};
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
 
 }
 
@@ -119,7 +278,9 @@ void autonSkills(){
   pros::Task trackingTask(trackPosition);
   pros::delay(100);
 
- 	struct Position goalPos{34.5,24.9,0};
+  Intake.moveVelocity(200);
+  bottomConveyorMotor.moveVelocity(200);
+ 	struct Position goalPos{34.75,24.9,0};
  	goToPosition(goalPos);
  	Intake.moveVelocity(0);
  	bottomConveyorMotor.moveVelocity(0);
@@ -172,7 +333,7 @@ void autonSkills(){
  	/*straightPID.setMaxOutput(7750);
  	straightPID.setMinOutput(-7750);*/
  	current=position;
- 	goalPos = {40.2,123.4,0};
+ 	goalPos = {38.0,123.4,0};
  	turnToFacePosition(goalPos);
  	Intake.moveVelocity(200);
  	goToPosition(goalPos);
@@ -196,7 +357,7 @@ void autonSkills(){
  	/*straightPID.setMaxOutput(7750);
  	straightPID.setMinOutput(-7750);*/
  	current = position;
- 	goalPos = {75.7,84,0};
+ 	goalPos = {74,92,0};
  	turnToFacePosition(goalPos);
   Intake.moveVelocity(200);
   bottomConveyorMotor.moveVelocity(600);
@@ -204,12 +365,12 @@ void autonSkills(){
   Intake.moveVelocity(0);
   bottomConveyorMotor.moveVelocity(0);
   current = position;
-  goalPos = {73.5,79,0,true};
+  goalPos = {74,79,0,true};
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
   current = position;
   //goal D
- 	goalPos = {75,122,0};
+ 	goalPos = {74,122,0};
  //turnToFacePosition(goalHeading);
  	goToPosition(goalPos);
  	//bottomConveyorMotor.moveVelocity(600);
@@ -221,13 +382,13 @@ void autonSkills(){
  	//turnToFacePosition(goalHeading);
  	goToPosition(goalPos);
  	current = position;
- 	goalPos = {110.1,109,0};
+ 	goalPos = {110.1,113,0};
  	turnToFacePosition(goalPos);
  	Intake.moveVelocity(200);
  	goToPosition(goalPos);
  	current = position;
   //goal A
- 	goalPos = {130.5,118,0};
+ 	goalPos = {130.5,124,0};
  	bottomConveyorMotor.moveVelocity(600);
  	turnToFacePosition(goalPos);
  	Intake.moveVelocity(0);
@@ -246,11 +407,40 @@ void autonSkills(){
   /*straightPID.setMaxOutput(7750);
   straightPID.setMinOutput(-7750);*/
   current = position;
-  goalPos = {76.5,75.5,0};
+  goalPos = {78,77.0,0};
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
   bottomConveyorMotor.moveVelocity(600);
   topConveyorMotor.moveVelocity(600);
+  pros::delay(750);
+  goalPos = {96,90,0,true};
+  goToPosition(goalPos);
+  bottomConveyorMotor.moveVelocity(0);
+  topConveyorMotor.moveVelocity(0);
+  goalPos = {93,65,0};
+  turnToFacePosition(goalPos);
+  Intake.moveVelocity(200);
+  goToPosition(goalPos);
+  goalPos = {125,65,0};
+  bottomConveyorMotor.moveVelocity(500);
+  turnToFacePosition(goalPos);
+  bottomConveyorMotor.moveVelocity(0);
+  goToPosition(goalPos);
+  Intake.moveVelocity(0);
+  topConveyorMotor.moveVelocity(600);
+  pros::delay(600);
+  topConveyorMotor.moveVelocity(0);
+  goalPos = {110,65,0,true};
+  goToPosition(goalPos);
+  goalPos = {120,12,0};
+  bottomConveyorMotor.moveVelocity(600);
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
+  topConveyorMotor.moveVelocity(600);
+
+
+
+
 
 
  	leftFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
