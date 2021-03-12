@@ -1,13 +1,17 @@
 #include "autons.hpp"
 //helloworld
 void redFrontAuton(){
-  position = {0,0,M_PI_2};
-  pros::Task trackingTask(trackPosition);
-  pros::delay(100);
-  struct Position goalPos = {0,84,0};
-  goToPosition(goalPos);
-
-
+  leftFrontMotor.moveVelocity(200);
+  rightFrontMotor.moveVelocity(200);
+  rightBackMotor.moveVelocity(200);
+  leftBackMotor.moveVelocity(200);
+  pros::delay(750);
+  leftFrontMotor.moveVelocity(0);
+  rightFrontMotor.moveVelocity(0);
+  rightBackMotor.moveVelocity(0);
+  leftBackMotor.moveVelocity(0);
+  topConveyorMotor.moveVelocity(600);
+  bottomConveyorMotor.moveVelocity(600);
 }
 
 void redBackAuton(){
@@ -217,6 +221,7 @@ void blueFrontAuton(){
 void blueBackAuton(){
   /*straightPID.setMaxOutput(10000);
   straightPID.setMinOutput(-10000);*/
+
   position = {24.5,12,M_PI};
   pros::Task trackingTask(trackPosition);
   pros::delay(100);
@@ -252,7 +257,7 @@ void blueBackAuton(){
   pros::delay(750);
   topConveyorMotor.moveVelocity(0);
   bottomConveyorMotor.moveVelocity(0);
-  goalPos = {70.5,22,0,true};
+  goalPos = {70.5,60,0,true};
   //goalPos = {70.5,47.8,0};
   current = position;
   //straightPID.setMaxOutput(8000);
@@ -432,7 +437,7 @@ void autonSkills(){
   topConveyorMotor.moveVelocity(0);
   goalPos = {110,65,0,true};
   goToPosition(goalPos);
-  goalPos = {120,12,0};
+  goalPos = {121,13,0};
   bottomConveyorMotor.moveVelocity(600);
   turnToFacePosition(goalPos);
   goToPosition(goalPos);

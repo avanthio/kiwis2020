@@ -4,6 +4,7 @@
 //The wall behind the robot is where 0,0 is
 //PI/2 radians (90 deg) is where the robot is perpendicular to the wall
 //The range for the angle of the robot is -pi, pi.
+std::string trackDebugStr;
 struct Position position{34.75,7.5,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
 constexpr double offsetLeft = 7.54/2;
@@ -19,6 +20,7 @@ double lastBackEncVal = 0;
 int loopNumber;
 static lv_obj_t* labelTrackingDebug;
 std::string trackingDebugString;
+std::string encoderDebugStr;
 double robotAngleInDegrees;
 //a boolean that decides whether the the robot should be tracking its position or not
 bool tracking = true;
@@ -81,6 +83,8 @@ void trackPosition(){
     labelTrackingDebug = lv_label_create(lv_scr_act(), NULL);
   }
 
+  //printf("Zero %d;%d;%d\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
+
   double currLeftEncVal;
   double currRightEncVal;
   double currBackEncVal;
@@ -100,14 +104,24 @@ void trackPosition(){
   leftTrackingWheel.reset();
   rightTrackingWheel.reset();
   backTrackingWheel.reset();
+  pros::delay(20);
 
-  pros::delay(40);
+
+  //printf("First %d;%d;%d\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
+
+
 
   while(tracking){
     //get and store all the tracking wheel encoder values in variables
-    currLeftEncVal = leftTrackingWheel.get();
-    currRightEncVal = rightTrackingWheel.get();
-    currBackEncVal = backTrackingWheel.get();
+    currLeftEncVal = leftTrackingWheel.controllerGet();
+    currRightEncVal = rightTrackingWheel.controllerGet();
+    currBackEncVal = backTrackingWheel.controllerGet();
+
+    if((currLeftEncVal == PROS_ERR)||(currRightEncVal == PROS_ERR)||(currBackEncVal == PROS_ERR)){
+      lv_label_set_text(labelTrackingDebug,"PROS_ERR!!!");
+      pros::delay(10000);
+    }
+    //printf("Second %d;%d;%d\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
 
     //calculate the distance travelled by each tracking wheel since the last cycle
     leftDistTravelled = calcTrackingWheelDistTravelled((currLeftEncVal-lastLeftEncVal));
@@ -155,12 +169,15 @@ void trackPosition(){
     position.y+=changeInY;
     //positionData.give();
 
+    //printf("Third %d;%d;%d\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
+
    if(trackingDebug){
       //print some information to screens for debugging purposes (angle and coordinates of robot)
       if(loopNumber%20){
           robotAngleInDegrees = radiansToDegrees(position.angle);
-          trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal);
+          trackingDebugString = "Angle = " + std::to_string(robotAngleInDegrees) + "\nCoordinates: (" + std::to_string(position.x) + "," + std::to_string(position.y) + ")" + '\n' + "Back Tracking Wheel: " + std::to_string(currBackEncVal) + "\nLeft Tracking Wheel: " + std::to_string(currLeftEncVal) + "\nRight Tracking Wheel: " + std::to_string(currRightEncVal)+"\n";
           lv_label_set_text(labelTrackingDebug, trackingDebugString.c_str());
+          //printf(trackingDebugString.c_str());
       }
   }
 
@@ -169,8 +186,10 @@ void trackPosition(){
     lastBackEncVal = currBackEncVal;
     lastRightEncVal = currRightEncVal;
 
+    //printf("Fourth %i;%i;%i\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
+
     //a quick delay so the brain doesn't go crazy
-    pros::delay(15); //previously 10 ms
+    pros::delay(100); //previously 10 ms
     ++loopNumber;
   }
 }

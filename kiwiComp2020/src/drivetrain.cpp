@@ -144,6 +144,23 @@ double calcHeadingToGoalPos(struct Position curr, struct Position goal) {
 }
 
 
+void findBlueBall(){
+
+  if(drivetrainDebug){
+    lv_obj_clean(lv_scr_act());
+    labelX = lv_label_create(lv_scr_act(),NULL);
+  }
+
+  std::string visionStr;
+  int visionCount = visionSensor.get_object_count();
+  visionStr = std::to_string(visionCount);
+  if(visionCount>0){
+    lv_label_set_text(labelX,visionStr.c_str());
+
+  }
+
+}
+
 
 //turns the robot to face an ABSOLUTE heading. ABSOLUTE. NOT RELATIVE.
 //If you want to face away from a point,remember to set reversed (in structure) to true
