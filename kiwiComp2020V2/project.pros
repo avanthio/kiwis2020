@@ -306,9 +306,9 @@
         },
         "upload_options": {
             "compress_bin": true,
-            "description": "vision test",
-            "remote_name": "kiwiBallTest",
-            "slot": 5
+            "description": "right side one point auton",
+            "remote_name": "kiwiRightOne",
+            "slot": 4
         }
     }
 }

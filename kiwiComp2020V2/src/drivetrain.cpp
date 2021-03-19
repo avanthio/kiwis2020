@@ -13,9 +13,9 @@ static lv_obj_t* labelX;
 //the PID must be reset every time it is used (reset outputs and stored values, not gains)
 //The setpoint (goal for the PID) is always 0 because the input is the current error
 //therefore, the setpoints are set in the PID setup function
-KiwiPID turnPID(17000,1000,20000); //17750,200,2//17000,500,10000(better?)
+KiwiPID turnPID(16000,1000,20000); //17750,200,2//17000,500,10000(better?)
 KiwiPID straightPID(1200,0.5,20);//1000,1,20
-KiwiPID angleAdjustPID(6000,500,0);
+KiwiPID angleAdjustPID(6000,100,0);
 
 
 
@@ -26,10 +26,10 @@ std::string pidData;
 //This function manages the PIDs at the start of the program.
 //It is called in the initialize function in main.cpp
 void setUpPIDs(){
-  turnPID.setMaxOutput(12000);
-  turnPID.setMinOutput(-12000);
-  straightPID.setMaxOutput(8000);
-  straightPID.setMinOutput(-8000);
+  turnPID.setMaxOutput(10000);
+  turnPID.setMinOutput(-10000);
+  straightPID.setMaxOutput(6500);
+  straightPID.setMinOutput(-6500);
   angleAdjustPID.setMaxOutput(2000);
   angleAdjustPID.setMinOutput(-2000);
 
@@ -41,7 +41,7 @@ void setUpPIDs(){
   turnPID.setIMin(1000);
   turnPID.setMaxErrForI(degreesToRadians(10));
   turnPID.setDeadzone(degreesToRadians(1));
-  straightPID.setIMax(8000);
+  straightPID.setIMax(6000);
   straightPID.setIMin(0);
   straightPID.setMaxErrForI(1000);
   straightPID.setDeadzone(0);
@@ -370,7 +370,7 @@ void goToPosition(struct Position goal){
 
     baseVoltage = straightPID.getOutput(-distanceToGoalPos);
 
-    if(abs(distanceToGoalPos)>5){
+    if(abs(distanceToGoalPos)>4){
       angleAdjustment = angleAdjustPID.getOutput(error.angle);
     }
     else{

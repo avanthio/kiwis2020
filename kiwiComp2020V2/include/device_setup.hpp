@@ -4,13 +4,10 @@
 
 extern okapi::Controller master;
 extern okapi::Controller partner;
-extern okapi::ControllerButton driveSwitchBtn;
 extern okapi::ControllerButton conveyorTopReverseBtn;
 extern okapi::ControllerButton intakeInBtn;
-extern okapi::ControllerButton intakeStopBtn;
 extern okapi::ControllerButton conveyorTopBtn;
 extern okapi::ControllerButton conveyorBottomBtn;
-extern okapi::ControllerButton turboBtn;
 extern okapi::ControllerButton intakeReverseBtn;
 extern okapi::ControllerButton conveyorBottomReverseBtn;
 

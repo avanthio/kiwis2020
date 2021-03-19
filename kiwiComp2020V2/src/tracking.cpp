@@ -183,7 +183,7 @@ void trackPosition(){
           //printf(trackingDebugString.c_str());
         positionData.give();
       }
-  }*/
+    }*/
 
     //set the last encoder value equal to the current encoder value;
     lastLeftEncVal = currLeftEncVal;

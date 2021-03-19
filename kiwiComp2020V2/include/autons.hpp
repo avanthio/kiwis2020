@@ -6,3 +6,4 @@ extern void redBackAuton();
 extern void blueFrontAuton();
 extern void blueBackAuton();
 extern void autonSkills();
+extern void testFn();

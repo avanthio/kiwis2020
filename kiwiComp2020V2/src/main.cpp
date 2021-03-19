@@ -52,7 +52,7 @@ void competition_initialize() {
 
 void autonomous() {
 
-	blueBackAuton();
+	redFrontAuton();
 	/*if(buttons){
 		runChosenAuton();
 	}*/
@@ -79,7 +79,6 @@ void testFunct(){
 }
 void opcontrol() {
 
-	//findBlueBall();
 	int x = 0;
   int y = 0;
   int leftFrontSpeed = 0;
@@ -112,29 +111,14 @@ void opcontrol() {
 
 
 		if(intakeInBtn.isPressed()){
-			x=1;
-			//Intake.moveVelocity(200);
+			Intake.moveVelocity(200);
 		}
     else if(intakeReverseBtn.isPressed()){
-			x=-1;
-      //Intake.moveVelocity(-200);
+			Intake.moveVelocity(-200);
     }
-		else if(intakeStopBtn.isPressed()){
-			x=0;
+		else{
+			Intake.moveVelocity(0);
 		}
-
-
-    switch(x){
-      case 1:
-        Intake.moveVelocity(200);
-        break;
-      case 0:
-        Intake.moveVelocity(0);
-        break;
-      case -1:
-        Intake.moveVelocity(-200);
-				break;
-    }
 
     if(conveyorTopBtn.isPressed()){
 			topConveyorMotor.moveVelocity(600);
