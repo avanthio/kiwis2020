@@ -7,7 +7,7 @@ void setBrakeTypes(){
  rightFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
  leftFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
  topConveyorMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
- bottomConveyorMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
+ bottomConveyorMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::brake);
 }
 
 

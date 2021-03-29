@@ -6,6 +6,7 @@ extern okapi::Controller master;
 extern okapi::Controller partner;
 extern okapi::ControllerButton conveyorTopReverseBtn;
 extern okapi::ControllerButton intakeInBtn;
+extern okapi::ControllerButton intakeStopBtn;
 extern okapi::ControllerButton conveyorTopBtn;
 extern okapi::ControllerButton conveyorBottomBtn;
 extern okapi::ControllerButton intakeReverseBtn;

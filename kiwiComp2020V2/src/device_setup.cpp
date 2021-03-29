@@ -1,8 +1,9 @@
 #include "device_setup.hpp"
 
 okapi::Controller master(okapi::ControllerId::master);
-okapi::Controller partner(okapi::ControllerId::partner);
+okapi::Controller partner(okapi::ControllerId::master);
 okapi::ControllerButton intakeInBtn(okapi::ControllerId::master,okapi::ControllerDigital::L1);
+//okapi::ControllerButton intakeStopBtn(okapi::ControllerId::master,okapi::ControllerDigital::L2);
 okapi::ControllerButton conveyorTopBtn(okapi::ControllerId::master,okapi::ControllerDigital::R2);
 okapi::ControllerButton conveyorBottomBtn(okapi::ControllerId::master,okapi::ControllerDigital::R1);
 okapi::ControllerButton conveyorTopReverseBtn(okapi::ControllerId::master,okapi::ControllerDigital::B);

@@ -9,7 +9,7 @@ bool trackingStarted = false;
 //PI/2 radians (90 deg) is where the robot is perpendicular to the wall
 //The range for the angle of the robot is -pi, pi.
 std::string trackDebugStr;
-struct Position position{34.75,7.5,M_PI_2};
+struct Position position{35,7.5,M_PI_2};
 //distance from each tracking wheel to tracking center/center of robot
 constexpr double offsetLeft = 7.54/2;
 constexpr double offsetRight = 7.54/2;
@@ -174,7 +174,7 @@ void trackPosition(){
 
     //printf("Third %d;%d;%d\n", leftTrackingWheel.get(),rightTrackingWheel.get(),backTrackingWheel.get());
 
-   /*if(trackingDebug){
+   if(trackingDebug){
       //print some information to screens for debugging purposes (angle and coordinates of robot)
       if(loopNumber%20){
         positionData.take(mutexWait);
@@ -183,7 +183,7 @@ void trackPosition(){
           //printf(trackingDebugString.c_str());
         positionData.give();
       }
-    }*/
+    }
 
     //set the last encoder value equal to the current encoder value;
     lastLeftEncVal = currLeftEncVal;

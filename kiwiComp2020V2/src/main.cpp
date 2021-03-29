@@ -1,4 +1,5 @@
 #include "main.h"
+#include "autons.hpp"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -11,9 +12,9 @@
 
 void initialize() {
 	pros::delay(100);
-	setUpPIDs();
-  setBrakeTypes();
-  resetDevices();
+	setUpPIDs(); 
+  	setBrakeTypes();
+  	resetDevices();
 	debugType();
 }
 
@@ -51,7 +52,6 @@ void competition_initialize() {
 //asdfasdfkasdf
 
 void autonomous() {
-
 	redFrontAuton();
 	/*if(buttons){
 		runChosenAuton();
@@ -77,19 +77,21 @@ void testFunct(){
 	rightFrontMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
 	leftBackMotor.setBrakeMode(okapi::AbstractMotor::brakeMode::coast);
 }
+
 void opcontrol() {
 
+	//findBlueBall();
 	int x = 0;
-  int y = 0;
-  int leftFrontSpeed = 0;
-  int rightFrontSpeed = 0;
-  int rightBackSpeed = 0;
-  int leftBackSpeed = 0;
-  int axis4 = 0;
+	int y = 0;
+	int leftFrontSpeed = 0;
+	int rightFrontSpeed = 0;
+	int rightBackSpeed = 0;
+	int leftBackSpeed = 0;
+	int axis4 = 0;
 	int axis2 = 0;
 	int axis3 = 0;
-  bool driveSam = true;
-  int loopCount = 0;
+	bool driveSam = true;
+	int loopCount = 0;
 
 	while(true){
 
@@ -97,10 +99,10 @@ void opcontrol() {
 			axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
 			axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*12000;
 
-		  leftFrontSpeed = axis3;
-      leftBackSpeed = axis3;
-      rightFrontSpeed = axis2;
-      rightBackSpeed = axis2;
+			leftFrontSpeed = axis3;
+			leftBackSpeed = axis3;
+			rightFrontSpeed = axis2;
+			rightBackSpeed = axis2;
 			master.setText(1,1,"tank drive  ");
 
 
@@ -113,14 +115,15 @@ void opcontrol() {
 		if(intakeInBtn.isPressed()){
 			Intake.moveVelocity(200);
 		}
-    else if(intakeReverseBtn.isPressed()){
+		else if(intakeReverseBtn.isPressed()){
 			Intake.moveVelocity(-200);
-    }
+		}
 		else{
 			Intake.moveVelocity(0);
 		}
 
-    if(conveyorTopBtn.isPressed()){
+
+		if(conveyorTopBtn.isPressed()){
 			topConveyorMotor.moveVelocity(600);
 		}
 		else if(conveyorTopReverseBtn.isPressed()){
@@ -142,6 +145,6 @@ void opcontrol() {
 
 
 
-	   pros::delay(20);
+		 pros::delay(20);
 	}
 }

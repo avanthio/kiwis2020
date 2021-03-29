@@ -313,6 +313,148 @@ void turnToFaceHeading(double goalHeading){
 //bool reversed defaults to false.
 void goToPosition(struct Position goal){
 
+  if(goal.reversed==true){
+    straightPID.setMaxOutput(6500);
+    straightPID.setMinOutput(-6500);
+  }
+  else{
+    straightPID.setMaxOutput(7000);
+    straightPID.setMinOutput(-7000);
+  }
+
+  straightPID.reset();
+  angleAdjustPID.reset();
+  int x = 0;
+  int y = 0;
+  struct Position current = getPosition();
+  Position startOfDrive = current;
+  double headingToGoalPos = calcHeadingToGoalPos(current,goal);
+  if(goal.reversed==true){
+    headingToGoalPos=limitAngle(headingToGoalPos+M_PI);
+  }
+  double distanceToGoalPos = distanceToPoint(current,goal);
+  if(goal.reversed==true){
+    distanceToGoalPos*=-1;
+  }
+  double initialDistance = distanceToGoalPos;
+  struct Position error;
+
+  int angleAdjustment = 0;
+  int baseVoltage = 0;
+  std::string outputStr;
+  double pastThreeErrorSum = 0;
+  double errAverage = 0;
+  double previousErrAverage = 0;
+  int loopCount = 0;
+  int count = 0;
+
+
+  if(drivetrainDebug){
+    lv_obj_clean(lv_scr_act());
+    labelX = lv_label_create(lv_scr_act(),NULL);
+  }
+
+  while(1){
+    current = getPosition();
+    //positionData.give();
+
+    headingToGoalPos = calcHeadingToGoalPos(current, goal);
+    if(goal.reversed==true){
+      headingToGoalPos = limitAngle(headingToGoalPos+M_PI);
+    }
+
+    error.angle = headingToGoalPos-current.angle;
+    error.angle = limitAngle(error.angle);
+
+    distanceToGoalPos = distanceToPoint(current,goal);
+    if(goal.reversed==true){
+      distanceToGoalPos*=-1;
+    }
+    if(abs(initialDistance)<abs(distanceToPoint(startOfDrive,current))){
+      distanceToGoalPos*=-1;
+    }
+
+
+
+    baseVoltage = straightPID.getOutput(-distanceToGoalPos);
+
+    if(abs(distanceToGoalPos)>4){
+      angleAdjustment = angleAdjustPID.getOutput(error.angle);
+      pastThreeErrorSum += distanceToGoalPos;
+      if(loopCount%6 == 0){
+        errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.1){
+          break;
+        }
+        previousErrAverage = errAverage;
+        errAverage = 0;
+        pastThreeErrorSum = 0;
+      }
+      loopCount+=1;
+    }
+    else{
+      angleAdjustment = 0;
+      pastThreeErrorSum += distanceToGoalPos;
+      if(loopCount%6 == 0){
+        errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.25){
+          break;
+        }
+        previousErrAverage = errAverage;
+        errAverage = 0;
+        pastThreeErrorSum = 0;
+      }
+      loopCount+=1;
+    }
+
+      rightFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+      rightBackMotor.moveVoltage(baseVoltage-angleAdjustment);
+      leftFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+      leftBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+
+
+
+
+
+    if(abs(distanceToGoalPos)<0.5){
+      x+=1;
+    }
+    else{
+      x = 0;
+    }
+
+    if(x>6){
+      break;
+    }
+
+    if(drivetrainDebug){
+      outputStr = "Input:"+std::to_string(distanceToGoalPos)+ "\nOutput: "+std::to_string(baseVoltage)+ "\nAngle Error:"+std::to_string(error.angle)+ "\nP Output:"+std::to_string(straightPID.getpOutput())+"\nI Output:"+std::to_string(straightPID.getiOutput())+"\nD Output:"+std::to_string(straightPID.getdOutput());
+      lv_label_set_text(labelX,outputStr.c_str());
+      //master.setText(0,0,outputStr);
+    }
+
+    pros::delay(20);
+    count+=1;
+  }
+
+  leftFrontMotor.moveVoltage(0);
+  leftBackMotor.moveVoltage(0);
+  rightFrontMotor.moveVoltage(0);
+  rightBackMotor.moveVoltage(0);
+
+}
+
+
+
+void goToPositionContinuous(Position goal){
+  if(goal.reversed==true){
+    straightPID.setMaxOutput(6500);
+    straightPID.setMinOutput(-6500);
+  }
+  else{
+    straightPID.setMaxOutput(7000);
+    straightPID.setMinOutput(-7000);
+  }
 
   straightPID.reset();
   angleAdjustPID.reset();
@@ -397,121 +539,14 @@ void goToPosition(struct Position goal){
 
 
 
-    if(abs(distanceToGoalPos)<0.5){
+    if(abs(distanceToGoalPos)<1){
       x+=1;
     }
     else{
       x = 0;
     }
 
-    if(x>6){
-      break;
-    }
-
-    if(drivetrainDebug){
-      outputStr = "Input:"+std::to_string(distanceToGoalPos)+ "\nOutput: "+std::to_string(baseVoltage)+ "\nAngle Error:"+std::to_string(error.angle)+ "\nP Output:"+std::to_string(straightPID.getpOutput())+"\nI Output:"+std::to_string(straightPID.getiOutput())+"\nD Output:"+std::to_string(straightPID.getdOutput());
-      lv_label_set_text(labelX,outputStr.c_str());
-      //master.setText(0,0,outputStr);
-    }
-
-    pros::delay(20);
-    count+=1;
-  }
-
-  leftFrontMotor.moveVoltage(0);
-  leftBackMotor.moveVoltage(0);
-  rightFrontMotor.moveVoltage(0);
-  rightBackMotor.moveVoltage(0);
-
-}
-
-
-
-void goToPositionContinuous(Position goal){
-  straightPID.reset();
-  angleAdjustPID.reset();
-  int x = 0;
-  int y = 0;
-  struct Position current = getPosition();
-  Position startOfDrive = current;
-  double headingToGoalPos = calcHeadingToGoalPos(current,goal);
-  if(goal.reversed==true){
-    headingToGoalPos=limitAngle(headingToGoalPos+M_PI);
-  }
-  double distanceToGoalPos = distanceToPoint(current,goal);
-  if(goal.reversed==true){
-    distanceToGoalPos*=-1;
-  }
-  double initialDistance = distanceToGoalPos;
-  struct Position error;
-
-  int angleAdjustment = 0;
-  int baseVoltage = 0;
-  std::string outputStr;
-  double pastThreeErrorSum = 0;
-  double errAverage = 0;
-  double previousErrAverage = 0;
-  int loopCount = 0;
-  int count = 0;
-
-
-  if(drivetrainDebug){
-    lv_obj_clean(lv_scr_act());
-    labelX = lv_label_create(lv_scr_act(),NULL);
-  }
-
-  while(1){
-    current = getPosition();
-    //positionData.give();
-
-    headingToGoalPos = calcHeadingToGoalPos(current, goal);
-    if(goal.reversed==true){
-      headingToGoalPos = limitAngle(headingToGoalPos+M_PI);
-    }
-
-    error.angle = headingToGoalPos-current.angle;
-    error.angle = limitAngle(error.angle);
-
-    distanceToGoalPos = distanceToPoint(current,goal);
-    if(goal.reversed==true){
-      distanceToGoalPos*=-1;
-    }
-    if(abs(initialDistance)<abs(distanceToPoint(startOfDrive,current))){
-      distanceToGoalPos*=-1;
-    }
-
-
-
-    baseVoltage = straightPID.getOutput(-distanceToGoalPos);
-
-    if(abs(distanceToGoalPos)>5){
-      angleAdjustment = angleAdjustPID.getOutput(error.angle);
-    }
-    else{
-      angleAdjustment = 0;
-      pastThreeErrorSum += distanceToGoalPos;
-      if(loopCount%6 == 0){
-        errAverage = pastThreeErrorSum/3;
-        if(abs(previousErrAverage-errAverage)<0.25){
-          break;
-        }
-        previousErrAverage = errAverage;
-        errAverage = 0;
-        pastThreeErrorSum = 0;
-      }
-      loopCount+=1;
-    }
-
-      rightFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
-      rightBackMotor.moveVoltage(baseVoltage-angleAdjustment);
-      leftFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
-      leftBackMotor.moveVoltage(baseVoltage+angleAdjustment);
-
-
-
-
-
-    if(abs(distanceToGoalPos)<0.5){
+    if(x>3){
       break;
     }
 
@@ -572,6 +607,15 @@ void turnToFacePositionContinuous(struct Position goal){
 
 
     if(abs(error.angle)<degreesToRadians(1.5)){
+      x+=1;
+    }
+    else{
+      x = 0;
+    }
+
+    //put this back!!
+    if(x>5){
+      timeInRange = time;
       break;
     }
 
@@ -582,6 +626,7 @@ void turnToFacePositionContinuous(struct Position goal){
     time+=20;
     pidData+=std::to_string(time)+','+std::to_string(turnPID.getRawOutput())+'\n';
   }
+
 
 }
 
