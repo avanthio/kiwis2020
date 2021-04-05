@@ -20,4 +20,5 @@ void resetDevices(){
   topConveyorMotor.tarePosition();
   bottomConveyorMotor.tarePosition();
   visionSensor.set_signature(1,&blue_Ball);
+  opticalSens.set_led_pwm(75);
 }

@@ -1,6 +1,32 @@
 #include "autons.hpp"
 //helloworld
-void redBackAuton(){
+void redLeftOne(){
+  positionData.take(mutexWait);
+  position = {26.5,12,M_PI};
+  positionData.give();
+
+  pros::Task trackingTask(trackPosition);
+  while(trackingStarted == false){
+    pros::delay(20);
+  }
+  
+  struct Position goalPos{19.5,12,0};
+  Intake.moveVelocity(200);
+  goToPosition(goalPos);
+  Intake.moveVelocity(0);
+
+  goalPos = {16.5,10,0};
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
+  redCycleFull();
+  goalPos = {30,30,0,true};
+
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
+
+}
+
+void blueLeftOne(){
   positionData.take(mutexWait);
   position = {26.5,12,M_PI};
   positionData.give();
@@ -17,20 +43,15 @@ void redBackAuton(){
   goalPos = {16.5,10,0};
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
-  bottomConveyorMotor.moveVelocity(300);
-  topConveyorMotor.moveVelocity(600);
-  Intake.moveVelocity(-200);
-  pros::delay(500);
-  Intake.moveVelocity(0);
-  topConveyorMotor.moveVelocity(0);
-  bottomConveyorMotor.moveVelocity(0);
+  blueCycleFull();
   goalPos = {30,30,0,true};
+  
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
 
 }
 
-void redFrontAuton(){
+void redRightOne(){
 
   positionData.take(mutexWait);
   position = {116.5,12,0};
@@ -47,13 +68,7 @@ void redFrontAuton(){
 
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
-  bottomConveyorMotor.moveVelocity(600);
-  topConveyorMotor.moveVelocity(600);
-  Intake.moveVelocity(-200);
-  pros::delay(500);
-  Intake.moveVelocity(0);
-  topConveyorMotor.moveVelocity(0);
-  bottomConveyorMotor.moveVelocity(0);
+  redCycleFull();
   goalPos = {100,30,0,true};
 
   turnToFacePosition(goalPos);
@@ -61,7 +76,7 @@ void redFrontAuton(){
 
 }
 
-void blueFrontAuton(){
+void blueRightOne(){
   positionData.take(mutexWait);
   position = {116.5,12,0};
   positionData.give();
@@ -77,67 +92,92 @@ void blueFrontAuton(){
 
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
-  bottomConveyorMotor.moveVelocity(600);
-  topConveyorMotor.moveVelocity(600);
-  Intake.moveVelocity(-200);
-  pros::delay(500);
-  Intake.moveVelocity(0);
-  topConveyorMotor.moveVelocity(0);
-  bottomConveyorMotor.moveVelocity(0);
-  goalPos = {72,47.8,0,true};
+  blueCycleFull();
+  goalPos = {100,30,0,true};
 
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
-  goalPos = {71,17.2,0};
-
-  turnToFacePosition(goalPos);
-  goToPosition(goalPos);
-  bottomConveyorMotor.moveVelocity(600);
-  topConveyorMotor.moveVelocity(600);
-  pros::delay(750);
-  topConveyorMotor.moveVelocity(0);
-  bottomConveyorMotor.moveVelocity(0);
-
 }
 
-void blueBackAuton(){
-
+void redRightTwo(){
   positionData.take(mutexWait);
-  position = {26.5,12,M_PI};
+  position = {116.5,12,0};
   positionData.give();
-
   pros::Task trackingTask(trackPosition);
   while(trackingStarted == false){
     pros::delay(20);
   }
-  struct Position goalPos{19.5,12,0};
+  struct Position goalPos{123.5,12,0};
   Intake.moveVelocity(200);
   goToPosition(goalPos);
   Intake.moveVelocity(0);
+  goalPos = {126,10,0};
 
-  goalPos = {16.5,10,0};
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
-  bottomConveyorMotor.moveVelocity(300);
-  topConveyorMotor.moveVelocity(600);
+  redCycleSimple();
+  goalPos = {72,47.8,0,true};
+
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
   Intake.moveVelocity(-200);
+  bottomConveyorMotor.moveVelocity(-600);
+  goalPos = {71,16,0};
   pros::delay(500);
   Intake.moveVelocity(0);
+  bottomConveyorMotor.moveVelocity(0);
+
+  turnToFacePosition(goalPos);
+  bottomConveyorMotor.moveVelocity(600);
+  goToPosition(goalPos);
+  topConveyorMotor.moveVelocity(600);
+  pros::delay(500);
   topConveyorMotor.moveVelocity(0);
   bottomConveyorMotor.moveVelocity(0);
-  goalPos = {70.5,47.8,0,true};
 
+  goalPos = {71,24,0,true};
   goToPosition(goalPos);
-  goalPos = {69.4,17.2,0};
+
+}
+
+void blueRightTwo(){
+  positionData.take(mutexWait);
+  position = {116.5,12,0};
+  positionData.give();
+  pros::Task trackingTask(trackPosition);
+  while(trackingStarted == false){
+    pros::delay(20);
+  }
+  struct Position goalPos{123.5,12,0};
+  Intake.moveVelocity(200);
+  goToPosition(goalPos);
+  Intake.moveVelocity(0);
+  goalPos = {126,10,0};
 
   turnToFacePosition(goalPos);
   goToPosition(goalPos);
+  blueCycleSimple();
+  goalPos = {72,47.8,0,true};
+
+  turnToFacePosition(goalPos);
+  goToPosition(goalPos);
+  Intake.moveVelocity(-200);
+  bottomConveyorMotor.moveVelocity(-600);
+  goalPos = {71,16,0};
+  pros::delay(500);
+  Intake.moveVelocity(0);
+  bottomConveyorMotor.moveVelocity(0);
+
+  turnToFacePosition(goalPos);
   bottomConveyorMotor.moveVelocity(600);
+  goToPosition(goalPos);
   topConveyorMotor.moveVelocity(600);
-  pros::delay(750);
+  pros::delay(500);
   topConveyorMotor.moveVelocity(0);
   bottomConveyorMotor.moveVelocity(0);
-  goalPos = {70.5,60,0,true};
+
+  goalPos = {71,24,0,true};
+  goToPosition(goalPos);
 
 
 }
