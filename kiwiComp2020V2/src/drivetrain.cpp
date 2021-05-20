@@ -955,7 +955,7 @@ void goToPosition(struct Position goal){
 
 
 
-    if(abs(distanceToGoalPos)<0.75){
+    if(abs(distanceToGoalPos)<1.5){
       x+=1;
     }
     else{

@@ -258,7 +258,7 @@ void goToRedBall(struct Position goalP){
         loopCount+=1;
 
 
-        if(abs(distanceToGoalPos)<1){
+        if(abs(distanceToGoalPos)<1.5){
           x+=1;
         }
         else{
