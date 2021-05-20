@@ -321,7 +321,7 @@ void goToBlueBall(struct Position goalP){
         leftBackMotor.moveVoltage(baseVoltage-angleAdjustment);  
       
        pastThreeErrorSum += distanceToGoalPos;
-        if(loopCount%20 == 0){
+
             errAverage = pastThreeErrorSum/3;
         if(abs(previousErrAverage-errAverage)<0.05){
           break;
@@ -329,9 +329,37 @@ void goToBlueBall(struct Position goalP){
             previousErrAverage = errAverage;
             errAverage = 0;
             pastThreeErrorSum = 0;
-        }
+        
 
-        pros::delay(450);
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+       
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+    
+        pros::delay(150);
+        
+        
+ 
     }
     rightFrontMotor.moveVoltage(0);
     leftFrontMotor.moveVoltage(0);
@@ -375,8 +403,8 @@ void goToBlueBallSoft(struct Position goalP){
         leftFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
         leftBackMotor.moveVoltage(baseVoltage-angleAdjustment);  
       
-       pastThreeErrorSum += distanceToGoalPos;
-        if(loopCount%20 == 0){
+      pastThreeErrorSum += distanceToGoalPos;
+
             errAverage = pastThreeErrorSum/3;
         if(abs(previousErrAverage-errAverage)<0.05){
           break;
@@ -384,9 +412,114 @@ void goToBlueBallSoft(struct Position goalP){
             previousErrAverage = errAverage;
             errAverage = 0;
             pastThreeErrorSum = 0;
-        }
+        
 
-        pros::delay(450);
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+       
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+    
+        pros::delay(150);
+    }
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
+}
+
+
+void alignToBlue(struct Position goalP){
+
+     pros::vision_object_s_t blueBall;
+    int angleError = 0;
+    int angleAdjustment = 0;
+    int baseVoltage = 6000;
+    int voltage = 0;
+    struct Position currentPos = getPosition();
+    struct Position startOfDrive = currentPos;
+    double distanceToGoalPos = distanceToPoint(currentPos,goalP);
+    double initialDistance = distanceToGoalPos;
+    double distanceTravelled;
+    double pastThreeErrorSum;
+    int loopCount = 0;
+    double errAverage = 0;
+    double previousErrAverage = 0;
+    int x = 0;
+
+
+    while(1){
+        errno = 0;
+        blueBall = identifyBlueBall();
+        if(errno == EDOM){
+            break;
+        }
+        angleError = 158 - blueBall.x_middle_coord; 
+        angleAdjustment = angleError*25;
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+
+        rightFrontMotor.moveVoltage(-baseVoltage+angleAdjustment);
+        rightBackMotor.moveVoltage(-baseVoltage+angleAdjustment);
+        leftFrontMotor.moveVoltage(-baseVoltage-angleAdjustment);
+        leftBackMotor.moveVoltage(-baseVoltage-angleAdjustment);  
+      
+       pastThreeErrorSum += distanceToGoalPos;
+
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        
+
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        
+        pros::delay(150);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+               pastThreeErrorSum += distanceToGoalPos;
+       
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+    
+        pros::delay(150);
     }
     rightFrontMotor.moveVoltage(0);
     leftFrontMotor.moveVoltage(0);

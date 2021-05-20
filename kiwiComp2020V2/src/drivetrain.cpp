@@ -14,7 +14,7 @@ static lv_obj_t* labelX;
 //The setpoint (goal for the PID) is always 0 because the input is the current error
 //therefore, the setpoints are set in the PID setup function
 KiwiPID turnPID(12000,1000,25000); //17750,200,2//17000,500,10000(better?)
-KiwiPID straightPID(300,10,20);//1000,1,20
+KiwiPID straightPID(500,10,20);//1000,1,20
 KiwiPID angleAdjustPID((6/M_PI),0,0);
 
 
@@ -285,7 +285,7 @@ void turnToFaceHeading(double goalHeading){
       rightBackMotor.moveVoltage(-actualVoltage);
 
 
-    if(abs(error.angle)<degreesToRadians(1.5)){
+    if(abs(error.angle)<degreesToRadians(3)){
       x+=1;
     }
     else{
@@ -955,14 +955,14 @@ void goToPosition(struct Position goal){
 
 
 
-    if(abs(distanceToGoalPos)<0.25){
+    if(abs(distanceToGoalPos)<0.75){
       x+=1;
     }
     else{
       x = 0;
     }
 
-    if(x>50){
+    if(x>10){
       break;
     }
 

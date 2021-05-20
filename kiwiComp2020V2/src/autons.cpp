@@ -238,7 +238,7 @@ void autonSkills(){
  	pros::delay(750);
  	topConveyorMotor.moveVelocity(0);
   currPos = getPosition();
- 	goalPos = {30.1,currPos.y,0,true};
+ 	goalPos = {28,currPos.y,0,true};
  	//turnToFacePosition(goalHeading);
  
  	goToPosition(goalPos);
@@ -258,19 +258,31 @@ void autonSkills(){
  	pros::delay(750);
  	topConveyorMotor.moveVelocity(0);
 
- 	goalPos = {36,123.4,0,true};
+ 	goalPos = {15,123.4,0,true};
+  //turnToFaceHeading(3*M_PI_4);
  	//turnToFacePositionContinuous(goalPos);
  	
  	      rightFrontMotor.moveVoltage(-4000);
         rightBackMotor.moveVoltage(-4000);
         leftFrontMotor.moveVoltage(-4000);
         leftBackMotor.moveVoltage(-4000);  
-        pros::delay(2000);
+        pros::delay(500);
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
+    turnToFaceHeading(3*M_PI_4);
+    rightFrontMotor.moveVoltage(-4000);
+    rightBackMotor.moveVoltage(-4000);
+    leftFrontMotor.moveVoltage(-4000);
+    leftBackMotor.moveVoltage(-4000);  
+    pros::delay(1500);
     rightFrontMotor.moveVoltage(0);
     leftFrontMotor.moveVoltage(0);
     rightBackMotor.moveVoltage(0);
     leftBackMotor.moveVoltage(0);
     pros::delay(500);
+
 
  	goalPos = {71,95,0};
  	turnToFacePosition(goalPos);
@@ -281,8 +293,9 @@ void autonSkills(){
   currPos = getPosition();
   goalPos = {currPos.x,76,0,true};
   turnToFacePosition(goalPos);
+  alignToBlue(goalPos);
   Intake.moveVelocity(0);
-  goToPosition(goalPos);
+  
 
   //goal D
  	goalPos = {71,124,0};
@@ -295,8 +308,16 @@ void autonSkills(){
  	topConveyorMotor.moveVelocity(0);
  	goalPos = {71,100,0,true};
  	//turnToFacePosition(goalHeading);
- 	goToPosition(goalPos);
-
+  alignToBlue(goalPos);
+  rightFrontMotor.moveVoltage(4000);
+  rightBackMotor.moveVoltage(4000);
+  leftFrontMotor.moveVoltage(4000);
+  leftBackMotor.moveVoltage(4000);  
+  pros::delay(1500);
+  rightFrontMotor.moveVoltage(0);
+  leftFrontMotor.moveVoltage(0);
+  rightBackMotor.moveVoltage(0);
+  leftBackMotor.moveVoltage(0);
  	goalPos = {115,121,0};
   Intake.moveVelocity(200);
   bottomConveyorMotor.moveVelocity(300);
@@ -308,6 +329,7 @@ void autonSkills(){
  	//turnToFacePosition(goalPos);
   bottomConveyorMotor.moveVelocity(0);
  	Intake.moveVelocity(0);
+   turnToFaceHeading(M_PI/6);
  	goToBlueBall(goalPos);
  	topConveyorMotor.moveVelocity(600);
  	pros::delay(750);
@@ -330,24 +352,31 @@ void autonSkills(){
   Intake.moveVelocity(0);
   goToBlueBallSoft(goalPos);
   bottomConveyorMotor.moveVelocity(600);
-  topConveyorMotor.moveVelocity(600);
+  topConveyorMotor.moveVelocity(400);
   pros::delay(750);
   goalPos = {96,90,0,true};
-  turnToFacePosition(goalPos);
-  goToPosition(goalPos);
+   rightFrontMotor.moveVoltage(-4000);
+        rightBackMotor.moveVoltage(-4000);
+        leftFrontMotor.moveVoltage(-4000);
+        leftBackMotor.moveVoltage(-4000);  
+        pros::delay(1000);
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
+    pros::delay(500);
   bottomConveyorMotor.moveVelocity(0);
   topConveyorMotor.moveVelocity(0);
   goalPos = {93,68,0};
   turnToFacePosition(goalPos);
   Intake.moveVelocity(200);
-  goToPosition(goalPos);
+  goToRedBall(goalPos);
   goalPos = {115,70,0};
   bottomConveyorMotor.moveVelocity(300);
   turnToFacePosition(goalPos);
-  goToPosition(goalPos);
-  Intake.moveVelocity(0);
   goalPos = {122,70,0};
   goToBlueBall(goalPos);
+  Intake.moveVelocity(0);
   bottomConveyorMotor.moveVelocity(0);
   topConveyorMotor.moveVelocity(600);
   pros::delay(600);
@@ -379,6 +408,8 @@ void testFn(){
   while(trackingStarted == false){
     pros::delay(20);
   }
+  struct Position goalPos{35,47.5,0};
+  alignToBlue(goalPos);
 
   //goToRedBall();
   /*struct Position goalPos{35,47.5,0};

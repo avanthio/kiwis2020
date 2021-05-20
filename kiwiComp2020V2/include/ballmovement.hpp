@@ -10,3 +10,4 @@ extern void blueCycleFull();
 extern void goToRedBall(struct Position goalP);
 extern void goToBlueBall(struct Position goalP);
 extern void goToBlueBallSoft(struct Position goalP);
+extern void alignToBlue(struct Position goalP);
