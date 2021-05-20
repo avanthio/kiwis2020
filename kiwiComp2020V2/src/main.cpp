@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autons.hpp"
+#include "ballmovement.hpp"
 #include "device_setup.hpp"
 
 /**
@@ -17,6 +18,7 @@ void initialize(){
   	setBrakeTypes();
   	resetDevices();
 	debugType();
+	strPIDsettings();
 }
 
 /**
@@ -53,7 +55,7 @@ void competition_initialize() {
  */
 
 void autonomous() {
-	redRightOne();
+	autonSkills();
 }
 
 /**
@@ -92,8 +94,7 @@ void opcontrol() {
 	int loopCount = 0;
 
 	while(true){
-
-
+		
 			axis3 = master.getAnalog(okapi::ControllerAnalog::leftY)*12000;
 			axis2 = master.getAnalog(okapi::ControllerAnalog::rightY)*12000;
 
@@ -110,13 +111,23 @@ void opcontrol() {
 		rightBackMotor.moveVoltage(rightBackSpeed);
 
 
-		if(intakeInBtn.isPressed()){
-			Intake.moveVelocity(200);
+		/*if(intakeInBtn.isPressed()){
+			x=1;
 		}
 		else if(intakeReverseBtn.isPressed()){
+			x=-1;
+		}
+		else if(intakeStopBtn.isPressed()){
+			x=0;
+		}*/
+
+		if(intakeInBtn.isPressed()){ //x==1){
+			Intake.moveVelocity(200);
+		}
+		else if(intakeReverseBtn.isPressed()){ //x==-1){
 			Intake.moveVelocity(-200);
 		}
-		else{
+		else { //if(x==0){
 			Intake.moveVelocity(0);
 		}
 

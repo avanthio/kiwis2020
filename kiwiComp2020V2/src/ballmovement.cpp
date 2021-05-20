@@ -1,6 +1,22 @@
 #include "ballmovement.hpp"
 #include "device_setup.hpp"
+#include "pros/vision.h"
+#define BLUEBALL 2
+#define REDBALL 1
 
+KiwiPID strPID(300,10,20);
+
+void strPIDsettings(){
+    
+    strPID.setIMax(6000);
+    strPID.setIMin(0);
+    strPID.setMaxErrForI(10);
+    strPID.setDeadzone(0);
+    strPID.setMaxOutput(12000);
+    strPID.setMinOutput(-12000);
+    strPID.setSetpoint(0);
+
+}
 bool checkBlue(){
     double detectedHue = opticalSens.get_hue();
     if(detectedHue>190&&detectedHue<230){
@@ -105,4 +121,275 @@ void blueCycleSimple(){
     Intake.moveVelocity(0);
     bottomConveyorMotor.moveVelocity(0);
     topConveyorMotor.moveVelocity(0);
+}
+
+
+pros::vision_object_s_t identifyRedBall(){
+    pros::vision_object_s_t redBall = visionSensor.get_by_sig(0,REDBALL);
+    
+    return redBall;
+}
+
+pros::vision_object_s_t identifyBlueBall(){
+    pros::vision_object_s_t blueBall = visionSensor.get_by_sig(0,BLUEBALL);
+
+    return blueBall;
+}
+
+void goToRedBall(struct Position goalP){
+
+    strPID.reset();
+
+    pros::vision_object_s_t redBall;
+    int angleError = 0;
+    int angleAdjustment = 0;
+    int baseVoltage = 8000;
+    int voltage = 0;
+    struct Position currentPos = getPosition();
+    struct Position startOfDrive = currentPos;
+    double distanceToGoalPos = distanceToPoint(currentPos,goalP);
+    double initialDistance = distanceToGoalPos;
+    double distanceTravelled;
+    double pastThreeErrorSum;
+    int loopCount = 0;
+    double errAverage = 0;
+    double previousErrAverage = 0;
+    int x = 0;
+
+    while(abs(distanceToGoalPos)>9){
+        errno = 0;
+        redBall = identifyRedBall();
+        if(errno == EDOM){
+            break;
+        }
+        angleError = 158 - redBall.x_middle_coord; 
+        angleAdjustment = angleError*25;
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+
+        rightFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+        rightBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+        leftFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+        leftBackMotor.moveVoltage(baseVoltage-angleAdjustment);  
+      
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+        pros::delay(50);
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+        if(distanceToGoalPos<9){
+            break;
+        }
+    }
+
+        rightFrontMotor.moveVoltage(baseVoltage);
+        rightBackMotor.moveVoltage(baseVoltage);
+        leftFrontMotor.moveVoltage(baseVoltage);
+        leftBackMotor.moveVoltage(baseVoltage);  
+
+    //std::cout<<"broke first loop\n";
+
+    while(1){
+        currentPos = getPosition();
+        distanceTravelled = distanceToPoint(startOfDrive,currentPos);
+    
+        distanceToGoalPos = initialDistance-distanceTravelled;
+
+        //std::cout<<"distance to goal "<< distanceToGoalPos <<"\n";
+
+        baseVoltage = strPID.getOutput(-distanceToGoalPos);
+
+        pastThreeErrorSum += distanceToGoalPos;
+        if(loopCount%20 == 0){
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        }
+        loopCount+=1;
+
+
+        if(abs(distanceToGoalPos)<1){
+          x+=1;
+        }
+        else{
+            x = 0;
+        }
+
+        if(x>10){
+        break;
+        }
+
+        rightFrontMotor.moveVoltage(baseVoltage);
+        rightBackMotor.moveVoltage(baseVoltage);
+        leftFrontMotor.moveVoltage(baseVoltage);
+        leftBackMotor.moveVoltage(baseVoltage); 
+
+    pros::delay(20);
+    }
+    //std::cout<<"all done";
+
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
+
+}
+
+void goToBlueBall(struct Position goalP){
+    strPID.reset();
+
+    pros::vision_object_s_t blueBall;
+    int angleError = 0;
+    int angleAdjustment = 0;
+    int baseVoltage = 6000;
+    int voltage = 0;
+    struct Position currentPos = getPosition();
+    struct Position startOfDrive = currentPos;
+    double distanceToGoalPos = distanceToPoint(currentPos,goalP);
+    double initialDistance = distanceToGoalPos;
+    double distanceTravelled;
+    double pastThreeErrorSum;
+    int loopCount = 0;
+    double errAverage = 0;
+    double previousErrAverage = 0;
+    int x = 0;
+
+    while(1){
+        errno = 0;
+        blueBall = identifyBlueBall();
+        if(errno == EDOM){
+            break;
+        }
+        angleError = 158 - blueBall.x_middle_coord; 
+        angleAdjustment = angleError*25;
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+
+        rightFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+        rightBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+        leftFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+        leftBackMotor.moveVoltage(baseVoltage-angleAdjustment);  
+      
+       pastThreeErrorSum += distanceToGoalPos;
+        if(loopCount%20 == 0){
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        }
+
+        pros::delay(450);
+    }
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
+}
+
+
+void goToBlueBallSoft(struct Position goalP){
+    strPID.reset();
+
+    pros::vision_object_s_t blueBall;
+    int angleError = 0;
+    int angleAdjustment = 0;
+    int baseVoltage = 6000;
+    int voltage = 0;
+    struct Position currentPos = getPosition();
+    struct Position startOfDrive = currentPos;
+    double distanceToGoalPos = distanceToPoint(currentPos,goalP);
+    double initialDistance = distanceToGoalPos;
+    double distanceTravelled;
+    double pastThreeErrorSum;
+    int loopCount = 0;
+    double errAverage = 0;
+    double previousErrAverage = 0;
+    int x = 0;
+
+    while(1){
+        errno = 0;
+        blueBall = identifyBlueBall();
+        if(errno == EDOM){
+            break;
+        }
+        angleError = 158 - blueBall.x_middle_coord; 
+        angleAdjustment = angleError*25;
+        currentPos = getPosition();
+        distanceToGoalPos = distanceToPoint(currentPos,goalP);
+
+        rightFrontMotor.moveVoltage(baseVoltage+angleAdjustment);
+        rightBackMotor.moveVoltage(baseVoltage+angleAdjustment);
+        leftFrontMotor.moveVoltage(baseVoltage-angleAdjustment);
+        leftBackMotor.moveVoltage(baseVoltage-angleAdjustment);  
+      
+       pastThreeErrorSum += distanceToGoalPos;
+        if(loopCount%20 == 0){
+            errAverage = pastThreeErrorSum/3;
+        if(abs(previousErrAverage-errAverage)<0.05){
+          break;
+        }
+            previousErrAverage = errAverage;
+            errAverage = 0;
+            pastThreeErrorSum = 0;
+        }
+
+        pros::delay(450);
+    }
+    rightFrontMotor.moveVoltage(0);
+    leftFrontMotor.moveVoltage(0);
+    rightBackMotor.moveVoltage(0);
+    leftBackMotor.moveVoltage(0);
 }

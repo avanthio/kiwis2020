@@ -19,6 +19,8 @@ void resetDevices(){
   rightFrontMotor.tarePosition();
   topConveyorMotor.tarePosition();
   bottomConveyorMotor.tarePosition();
-  visionSensor.set_signature(1,&blue_Ball);
+  visionSensor.set_signature(2,&blue_Ball);
+  visionSensor.set_signature(1,&red_Ball);
+  visionSensor.set_exposure(79);
   opticalSens.set_led_pwm(75);
 }

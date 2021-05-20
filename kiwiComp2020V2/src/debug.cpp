@@ -7,7 +7,7 @@ bool trackingDebug = false;
 
 bool buttons = false;
 
-int debugTy = 0;
+int debugTy = 2;
 
 
 void debugType(){

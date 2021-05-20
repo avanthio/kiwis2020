@@ -2,7 +2,9 @@
 
 
 pros::Mutex positionData;
+pros::Mutex trackingMutex;
 int mutexWait = 50;
+int trackingWait = 5000;
 bool trackingStarted = false;
 
 //The wall behind the robot is where 0,0 is

@@ -25,6 +25,7 @@ extern okapi::Motor  topConveyorMotor;
 extern okapi::Motor bottomConveyorMotor;
 extern pros::Vision visionSensor;
 extern pros::vision_signature_s_t blue_Ball;
+extern pros::vision_signature_s_t red_Ball;
 extern pros::Optical opticalSens;
 extern pros::Rotation rightTrackingWheel;
 extern pros::Rotation leftTrackingWheel;
